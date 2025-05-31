@@ -1,30 +1,46 @@
 import React from "react";
 
-export default function CalendarSection() {
-  return (
-    <div>
-      <h3 className="font-medium mb-3">Select a Date</h3>
-      <div className="bg-white text-gray-900 dark:bg-gray-800 dark:text-white rounded-lg p-4">
-        <div className="flex justify-between items-center border-b border-gray-700 pb-2 mb-3">
-          <button>&lt;</button>
-          <h4 className="font-medium">June 2023</h4>
-          <button>&gt;</button>
-        </div>
-        <div className="grid grid-cols-7 gap-1 text-sm">
-          {["S", "M", "T", "W", "T", "F", "S"].map(day => (
-            <div key={day} className="text-center font-medium text-gray-400">{day}</div>
-          ))}
-        </div>
-        <div className="grid grid-cols-7 gap-1 mt-1">
-          {Array.from({ length: 35 }, (_, i) => (
-            <div key={i} className={`h-8 flex items-center justify-center rounded-md text-sm ${
-              i === 12 ? "bg-green-600 text-white" : "text-gray-300"
-            }`}>
-              {i < 4 ? "" : i - 3}
+export default function CalendarSection({ selectedDate, onSelectDate }) {
+    const today = new Date();
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth();
+
+    const firstDay = new Date(year, month, 1).getDay(); // 0 (Sun) - 6 (Sat)
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const days = Array.from({ length: firstDay + daysInMonth }, (_, i) => {
+        const day = i - firstDay + 1;
+        return day > 0 ? new Date(year, month, day) : null;
+    });
+
+    const isSameDay = (a, b) =>
+        a.getDate() === b.getDate() &&
+        a.getMonth() === b.getMonth() &&
+        a.getFullYear() === b.getFullYear();
+
+    return (
+        <div>
+            <h3 className="font-medium mb-3 text-gray-900 dark:text-white">Select a Date</h3>
+            <div className="grid grid-cols-7 gap-1">
+                {["S", "M", "T", "W", "T", "F", "S"].map((d) => (
+                    <div key={d} className="text-center text-xs text-gray-500">{d}</div>
+                ))}
+                {days.map((date, i) => (
+                    <div
+                        key={i}
+                        className={`h-8 flex items-center justify-center rounded-md text-sm cursor-pointer ${
+                            date
+                                ? isSameDay(date, selectedDate)
+                                    ? "bg-green-600 text-white"
+                                    : "text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700"
+                                : ""
+                        }`}
+                        onClick={() => date && onSelectDate(date)}
+                    >
+                        {date?.getDate()}
+                    </div>
+                ))}
             </div>
-          ))}
         </div>
-      </div>
-    </div>
-  );
+    );
 }
