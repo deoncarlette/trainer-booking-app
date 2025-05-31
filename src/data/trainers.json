@@ -1,21 +1,21 @@
 [
   {
     "id": 1,
-    "name": "Coach Michael",
+    "name": "Coach Nique",
     "specialty": "Shooting Specialist",
     "location": "Downtown Training Center",
     "price": 65
   },
   {
     "id": 2,
-    "name": "Coach Lisa",
+    "name": "Coach Dale",
     "specialty": "Defense Expert",
     "location": "Westside Community Court",
     "price": 55
   },
   {
     "id": 3,
-    "name": "Coach Marcus",
+    "name": "Coach Poodie",
     "specialty": "Ball Handling Coach",
     "location": "Eastside Sports Complex",
     "price": 85

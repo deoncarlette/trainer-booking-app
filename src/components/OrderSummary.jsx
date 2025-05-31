@@ -2,7 +2,7 @@ import React from "react";
 
 export default function OrderSummary() {
   return (
-    <div className="bg-gray-800 text-white rounded-lg p-4 border border-gray-700">
+    <div className="bg-white text-gray-900 dark:bg-gray-800 dark:text-white rounded-lg p-4">
       <h4 className="font-medium mb-2">Order Summary</h4>
       <div className="text-sm space-y-1">
         <div className="flex justify-between">

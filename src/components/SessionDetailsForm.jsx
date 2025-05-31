@@ -2,7 +2,7 @@ import React from "react";
 
 export default function SessionDetailsForm() {
   return (
-    <div className="bg-gray-800 text-white rounded-lg p-4">
+    <div className="bg-white text-gray-900 dark:bg-gray-800 dark:text-white rounded-lg p-4">
       <h4 className="font-medium mb-3">Session Details</h4>
       <div className="space-y-3">
         <div>

@@ -4,7 +4,7 @@ export default function CalendarSection() {
   return (
     <div>
       <h3 className="font-medium mb-3">Select a Date</h3>
-      <div className="bg-gray-800 text-white border border-gray-700 rounded-lg p-4">
+      <div className="bg-white text-gray-900 dark:bg-gray-800 dark:text-white rounded-lg p-4">
         <div className="flex justify-between items-center border-b border-gray-700 pb-2 mb-3">
           <button>&lt;</button>
           <h4 className="font-medium">June 2023</h4>
