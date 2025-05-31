@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/trainer-booking-app/static/css/main.a57884aa.css",
+    "main.js": "/trainer-booking-app/static/js/main.d8963b8b.js",
+    "index.html": "/trainer-booking-app/index.html",
+    "main.a57884aa.css.map": "/trainer-booking-app/static/css/main.a57884aa.css.map",
+    "main.d8963b8b.js.map": "/trainer-booking-app/static/js/main.d8963b8b.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a57884aa.css",
+    "static/js/main.d8963b8b.js"
+  ]
+}
