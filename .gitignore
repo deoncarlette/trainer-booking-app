@@ -1,7 +1,8 @@
 
 .DS_Store
 
-/.idea/
-/node_modules/
-/build/
-/rewrite/
+/.idea
+/node_modules
+/build
+/rewrite
+
