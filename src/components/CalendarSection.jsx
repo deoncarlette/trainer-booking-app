@@ -1,6 +1,16 @@
 import React, { useState } from "react";
+import { eachDayOfInterval, format, parseISO, startOfWeek, addDays } from "date-fns";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase"; // your config file
 
-export default function CalendarSection({ selectedDate, onSelectDate }) {
+async function fetchTrainerAvailability(trainerId) {
+  const ref = doc(db, "trainers", trainerId);
+  const snap = await getDoc(ref);
+  if (snap.exists()) return snap.data();
+  throw new Error("Trainer not found");
+}
+
+export default function CalendarSection({ trainerId, selectedDate, onSelectDate }) {
   const [viewDate, setViewDate] = useState(selectedDate || new Date());
 
   const year = viewDate.getFullYear();
@@ -63,8 +73,8 @@ export default function CalendarSection({ selectedDate, onSelectDate }) {
 
         {/* Weekday Labels */}
         <div className="grid grid-cols-7 gap-1 mb-1 text-center text-xs text-gray-500 dark:text-gray-400">
-          {["S", "M", "T", "W", "T", "F", "S"].map((d) => (
-            <div key={d}>{d}</div>
+          {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
+            <div key={i}>{d}</div>
           ))}
         </div>
 
@@ -88,4 +98,21 @@ export default function CalendarSection({ selectedDate, onSelectDate }) {
       </div>
     </div>
   );
+}
+
+function generateWeekAvailability(weekly, custom, weekStartDate) {
+  const days = eachDayOfInterval({ start: weekStartDate, end: addDays(weekStartDate, 6) });
+
+  return days.map((date) => {
+    const dayKey = format(date, "EEEE").toLowerCase(); // e.g., 'monday'
+    const dateStr = format(date, "yyyy-MM-dd");
+
+    const baseSlots = weekly?.[dayKey] || [];
+    const customSlots = custom?.[dateStr] || [];
+
+    return {
+      date: dateStr,
+      slots: customSlots.length > 0 ? customSlots : baseSlots,
+    };
+  });
 }

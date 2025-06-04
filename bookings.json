@@ -1,0 +1,26 @@
+{
+  "1": {
+    "bookingId": "uid_from_auth",
+    "clientId": "uid_client",
+    "lastName": "Jordan",
+    "fistName": "Anthony",
+    "bookings": {
+      "1": {
+        "date": "2025-06-17",
+        "timeSlot": {
+          "start": "16:00",
+          "end": "17:00"
+        },
+        "createdAt": "2025-06-01T12:00:00Z"
+      },
+      "2": {
+        "date": "2025-06-25",
+        "timeSlot": {
+          "start": "16:00",
+          "end": "17:00"
+        },
+        "createdAt": "2025-06-01T12:00:00Z"
+      }
+    }
+  }
+}
