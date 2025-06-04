@@ -2,7 +2,7 @@ import React from "react";
 
 export default function TimeSlots() {
   return (
-    <div>
+    <div className="dark:bg-stone-900 dark:text-stone-100 p-4">
       <h3 className="font-medium mb-2">Available Time Slots</h3>
       <p className="text-sm text-gray-400 mb-2">June 9, 2023</p>
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">

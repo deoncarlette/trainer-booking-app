@@ -1,17 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
+import {app} from "./utils/classnames";
+import Navbar from "./components/Navbar";
+import PageHeader from "./components/PageHeader";
 import TrainerList from "./components/TrainerList";
-import BookingForm from "./components/BookingForm";
+import BookingSection from "./components/BookingSection";
 
-function App() {
+
+export default function App() {
+  const [selectedCoach, setSelectedCoach] = useState(null);
+
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Find Your Trainer</h1>
-        <TrainerList />
-        <BookingForm />
-      </div>
-    </main>
+    <body>
+      <main className={app.main}>
+        <Navbar/>
+        <div className={app.container}>
+          <PageHeader/>
+          <TrainerList setSelectedCoach={setSelectedCoach}/>
+          <BookingSection selectedCoach={selectedCoach}/>
+        </div>
+
+      </main>
+    </body>
+
   );
 }
-
-export default App;

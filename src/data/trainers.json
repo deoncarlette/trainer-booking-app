@@ -2,20 +2,23 @@
   {
     "id": 1,
     "name": "Coach Nique",
+    "initials": "N",
     "specialty": "Shooting Specialist",
-    "location": "Downtown Training Center",
+    "location": "Wagner High School",
     "price": 65
   },
   {
     "id": 2,
     "name": "Coach Dale",
+    "initials": "D",
     "specialty": "Defense Expert",
-    "location": "Westside Community Court",
+    "location": "Brooklyn Community Center",
     "price": 55
   },
   {
     "id": 3,
     "name": "Coach Poodie",
+    "initials": "P",
     "specialty": "Ball Handling Coach",
     "location": "Eastside Sports Complex",
     "price": 85
