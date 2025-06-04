@@ -3,8 +3,7 @@ import trainers from "../data/trainers.json";
 import {trainerList} from "../utils/classnames";
 import TrainerCard from "./TrainerCard";
 
-export default function TrainerList({setSelectedCoach}) {
-  const bookingRef = useRef(null);
+export default function TrainerList({bookingRef, setSelectedCoach}) {
 
   const handleTrainerSelect = (trainer) => {
     setSelectedCoach(trainer);

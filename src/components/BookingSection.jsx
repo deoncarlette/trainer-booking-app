@@ -6,18 +6,19 @@ import CalendarSection from "./CalendarSection";
 import TimeSlots from "./TimeSlots";
 import PaymentForm from "./PaymentForm";
 import OrderSummary from "./OrderSummary";
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 
-export default function BookingSection({selectedCoach}) {
+export default function BookingSection({bookingRef, selectedCoach}) {
   const [selectedDate, setSelectedDate] = useState(new Date());
+
 
   return (
     <div className={bookingSection.bookingOuter}>
       <h2 className={bookingSection.h2}>Book Your Training Session</h2>
       <div className={bookingSection.bookingInner}>
         <div className={bookingSection.session}>
-          <TrainerProfile coach={selectedCoach}/>
-          <SessionDetails/>
+          <div ref={bookingRef}><TrainerProfile coach={selectedCoach}/></div>
+            <SessionDetails/>
         </div>
 
         {/*Calendar + Time + Payment*/}

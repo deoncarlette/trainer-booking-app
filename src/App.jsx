@@ -8,7 +8,7 @@ import BookingSection from "./components/BookingSection";
 
 export default function App() {
   const [selectedCoach, setSelectedCoach] = useState(null);
-
+  const bookingRef = useRef(null);
 
   return (
     <body>
@@ -16,8 +16,8 @@ export default function App() {
         <Navbar/>
         <div className={app.container}>
           <PageHeader/>
-          <TrainerList setSelectedCoach={setSelectedCoach}/>
-          <BookingSection selectedCoach={selectedCoach}/>
+          <TrainerList bookingRef={bookingRef} setSelectedCoach={setSelectedCoach}/>
+          <BookingSection bookingRef={bookingRef} selectedCoach={selectedCoach}/>
         </div>
 
       </main>
