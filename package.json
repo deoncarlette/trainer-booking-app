@@ -15,7 +15,9 @@
     "react-scripts": "5.0.1"
   },
   "devDependencies": {
-    "gh-pages": "^5.0.0"
+    "autoprefixer": "^10.4.21",
+    "gh-pages": "^5.0.0",
+    "postcss-preset-env": "^10.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
