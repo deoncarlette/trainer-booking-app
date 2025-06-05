@@ -1,20 +1,50 @@
 {
-  "1": {
-    "bookingId": "uid_from_auth",
-    "clientId": "uid_client",
-    "lastName": "Jordan",
-    "fistName": "Anthony",
+  "coach_nique": {
+    "id": "nique",
+    "name": "Coach Nique",
     "bookings": {
       "1": {
+        "bookingId": "booking_1",
+        "clientId": "uid_client_123",
+        "firstName": "Anthony",
+        "lastName": "Jordan",
         "date": "2025-06-17",
         "timeSlot": {
           "start": "16:00",
           "end": "17:00"
         },
         "createdAt": "2025-06-01T12:00:00Z"
-      },
-      "2": {
-        "date": "2025-06-25",
+      }
+    }
+  },
+  "coach_dale": {
+    "id": "dale",
+    "name": "Coach Dale",
+    "bookings": {
+      "1": {
+        "bookingId": "booking_1",
+        "clientId": "uid_client_123",
+        "firstName": "Anthony",
+        "lastName": "Jordan",
+        "date": "2025-06-17",
+        "timeSlot": {
+          "start": "16:00",
+          "end": "17:00"
+        },
+        "createdAt": "2025-06-01T12:00:00Z"
+      }
+    }
+  },
+  "coach_poodie": {
+    "id": "poodie",
+    "name": "Coach Poodie",
+    "bookings": {
+      "1": {
+        "bookingId": "booking_1",
+        "clientId": "uid_client_123",
+        "firstName": "Anthony",
+        "lastName": "Jordan",
+        "date": "2025-06-17",
         "timeSlot": {
           "start": "16:00",
           "end": "17:00"

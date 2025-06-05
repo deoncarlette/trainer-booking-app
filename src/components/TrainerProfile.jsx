@@ -1,10 +1,10 @@
 import React from "react";
 import {trainerProfile} from "../utils/classnames";
 
-export default function TrainerProfile({ coach }) {
-  if (!coach) return null;
+export default function TrainerProfile({ trainer }) {
+  if (!trainer) return null;
 
-  const { initials, name, specialty, location, sessionLength, price } = coach;
+  const { initials, name, specialty, location, sessionLength, price } = trainer;
 
   return (
     <div className={trainerProfile.outerContainer}>

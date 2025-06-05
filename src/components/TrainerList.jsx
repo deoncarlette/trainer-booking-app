@@ -3,10 +3,13 @@ import trainers from "../data/trainers.json";
 import {trainerList} from "../utils/classnames";
 import TrainerCard from "./TrainerCard";
 
-export default function TrainerList({bookingRef, setSelectedCoach}) {
+export default function TrainerList({bookingRef, trainers, setSelectedCoach, availability, setCoachAvailability}) {
 
   const handleTrainerSelect = (trainer) => {
     setSelectedCoach(trainer);
+    const coachAvailability = availability.find(item => item.id === trainer?.id) ?? {};
+    setCoachAvailability(coachAvailability);
+
     const isMobile = window.innerWidth < 768;
 
     if (isMobile) {

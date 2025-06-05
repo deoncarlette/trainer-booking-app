@@ -1,28 +1,26 @@
-import React, { useState } from "react";
-import { eachDayOfInterval, format, parseISO, startOfWeek, addDays } from "date-fns";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase"; // your config file
+import React, { useEffect, useState } from "react";
+import { eachDayOfInterval, format, addDays } from "date-fns";
 
-async function fetchTrainerAvailability(trainerId) {
-  const ref = doc(db, "trainers", trainerId);
-  const snap = await getDoc(ref);
-  if (snap.exists()) return snap.data();
-  throw new Error("Trainer not found");
+function generateWeekAvailability(weekly, custom, weekStartDate) {
+  const days = eachDayOfInterval({ start: weekStartDate, end: addDays(weekStartDate, 6) });
+
+  return days.map((date) => {
+    const dayKey = format(date, "EEEE").toLowerCase(); // e.g., 'monday'
+    const dateStr = format(date, "yyyy-MM-dd");
+
+    const baseSlots = weekly?.[dayKey] || [];
+    const customSlots = custom?.[dateStr] || [];
+
+    return {
+      date: dateStr,
+      slots: customSlots.length > 0 ? customSlots : baseSlots,
+    };
+  });
 }
 
-export default function CalendarSection({ trainerId, selectedDate, onSelectDate }) {
+export default function CalendarSection({ coachAvailability, selectedDate, onSelectDate }) {
   const [viewDate, setViewDate] = useState(selectedDate || new Date());
 
-  const year = viewDate.getFullYear();
-  const month = viewDate.getMonth();
-
-  const firstDay = new Date(year, month, 1).getDay(); // 0 (Sun) - 6 (Sat)
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  const days = Array.from({ length: firstDay + daysInMonth }, (_, i) => {
-    const day = i - firstDay + 1;
-    return day > 0 ? new Date(year, month, day) : null;
-  });
 
   const isSameDay = (a, b) =>
     a &&
@@ -30,6 +28,21 @@ export default function CalendarSection({ trainerId, selectedDate, onSelectDate 
     a.getDate() === b.getDate() &&
     a.getMonth() === b.getMonth() &&
     a.getFullYear() === b.getFullYear();
+
+  const isAvailable = (date) => {
+    const dateStr = format(date, "yyyy-MM-dd");
+    const dayKey = format(date, "EEEE").toLowerCase();
+
+    if (coachAvailability.unavailableDates?.includes(dateStr)) return false;
+
+    const custom = coachAvailability.customAvailability?.[dateStr];
+    const weekly = coachAvailability.weeklyAvailability?.[dayKey];
+
+    const customHasSlots = custom && Object.keys(custom).length > 0;
+    const weeklyHasSlots = weekly && Object.keys(weekly).length > 0;
+
+    return customHasSlots || weeklyHasSlots;
+  };
 
   const formatMonthYear = (date) =>
     date.toLocaleDateString("default", { month: "long", year: "numeric" });
@@ -46,8 +59,17 @@ export default function CalendarSection({ trainerId, selectedDate, onSelectDate 
     setViewDate(newDate);
   };
 
-  return (
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
 
+  const days = Array.from({ length: firstDay + daysInMonth }, (_, i) => {
+    const day = i - firstDay + 1;
+    return day > 0 ? new Date(year, month, day) : null;
+  });
+
+  return (
     <div className="w-full p-4 rounded-md bg-white dark:bg-stone-900 dark:text-stone-100 shadow-md mb-5">
       <h3 className="font-medium mb-3 text-gray-900 dark:text-white">Select a Date</h3>
 
@@ -61,8 +83,8 @@ export default function CalendarSection({ trainerId, selectedDate, onSelectDate 
             ←
           </button>
           <span className="text-gray-800 dark:text-gray-200 font-semibold">
-                    {formatMonthYear(viewDate)}
-                </span>
+            {formatMonthYear(viewDate)}
+          </span>
           <button
             onClick={goToNextMonth}
             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
@@ -80,39 +102,30 @@ export default function CalendarSection({ trainerId, selectedDate, onSelectDate 
 
         {/* Date Cells */}
         <div className="grid grid-cols-7 gap-1">
-          {days.map((date, i) => (
-            <div
-              key={i}
-              className={`h-8 flex items-center justify-center rounded-md text-sm cursor-pointer transition
-                            ${!date ? "" :
-                isSameDay(date, selectedDate)
-                  ? "bg-green-600 text-white"
-                  : "text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
-              }`}
-              onClick={() => date && onSelectDate(date)}
-            >
-              {date?.getDate()}
-            </div>
-          ))}
+          {days.map((date, i) => {
+            const selected = isSameDay(date, selectedDate);
+            const available = date && isAvailable(date);
+
+            return (
+              <div
+                key={i}
+                className={`h-8 flex items-center justify-center rounded-md text-sm transition
+                  ${!date
+                  ? ""
+                  : selected
+                    ? "bg-green-600 text-white"
+                    : available
+                      ? "text-gray-900 dark:text-white cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+                      : "bg-gray-200 text-stone-400 dark:bg-stone-700 dark:text-stone-500 cursor-not-allowed"
+                }`}
+                onClick={() => available && onSelectDate(date)}
+              >
+                {date?.getDate()}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
   );
-}
-
-function generateWeekAvailability(weekly, custom, weekStartDate) {
-  const days = eachDayOfInterval({ start: weekStartDate, end: addDays(weekStartDate, 6) });
-
-  return days.map((date) => {
-    const dayKey = format(date, "EEEE").toLowerCase(); // e.g., 'monday'
-    const dateStr = format(date, "yyyy-MM-dd");
-
-    const baseSlots = weekly?.[dayKey] || [];
-    const customSlots = custom?.[dateStr] || [];
-
-    return {
-      date: dateStr,
-      slots: customSlots.length > 0 ? customSlots : baseSlots,
-    };
-  });
 }

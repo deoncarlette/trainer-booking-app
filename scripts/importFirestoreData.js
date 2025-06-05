@@ -1,4 +1,4 @@
-// scripts/importTrainers.js
+// scripts/importFirestoreData.js
 import { initializeApp } from "firebase/app";
 import { getFirestore, setDoc, doc } from "firebase/firestore";
 import { readFile } from "fs/promises";
@@ -18,19 +18,27 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 async function importData(fileName) {
+  try {
+    const file = await readFile(`./${fileName}.json`, "utf-8");
+    const data = JSON.parse(file);
 
-  const file = await readFile(`./${fileName}.json`, "utf-8");
-  const data = JSON.parse(file);
-
-  for (const key in data) {
-    const fileData = data[key];
-    try {
+    for (const key in data) {
+      const fileData = data[key];
       await setDoc(doc(db, fileName, key), fileData);
-      console.log(`✅ Uploaded ${fileData.name}`);
-    } catch (err) {
-      console.error(`❌ Failed to upload ${key}:`, err);
+      console.log(`✅ Uploaded ${fileName}/${key}`);
     }
+  } catch (err) {
+    console.error(`❌ Failed to import ${fileName}:`, err.message);
   }
 }
 
-importData();
+// 🟡 Get CLI argument and run
+const [,, fileName] = process.argv;
+
+if (!fileName) {
+  console.error("❌ Please provide a file name (without .json)");
+  console.error("   Example: node importFirestoreData.js trainers");
+  process.exit(1);
+}
+
+importData(fileName);
