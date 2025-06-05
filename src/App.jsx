@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { getFirestore } from "firebase/firestore";
 import { fetchTrainers } from "./utils/fetchTrainers";
-import { app}  from "./utils/classnames";
+import { app }  from "./utils/classnames";
 
 import Navbar from "./components/Navbar";
 import PageHeader from "./components/PageHeader";

@@ -51,8 +51,10 @@
         }
       },
       "sunday": {
-        "start": "15:00",
-        "end": "16:00"
+        "0": {
+          "start": "15:00",
+          "end": "16:00"
+        }
       }
     },
     "customAvailability": {
