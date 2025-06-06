@@ -12,7 +12,7 @@ import BookingSummary from "./BookingSumary";
 import { format } from "date-fns";
 
 export default function BookingSection({selectedCoach, coachAvailability}) {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(null); // Start with null instead of new Date()
   const [selectedTime, setSelectedTime] = useState(new Date());
 
   // Updated structure to match BookingSummary expectations
@@ -65,10 +65,14 @@ export default function BookingSection({selectedCoach, coachAvailability}) {
 
   // Get selected times for the current date to pass to TimeSlots
   const getSelectedTimesForDate = (date) => {
+    if (!date) return [];
     const dateKey = format(date, "yyyy-MM-dd");
     const entries = selectedBlocks[dateKey] || [];
     return entries.map(entry => entry.time);
   };
+
+  // Check if there are any selected blocks
+  const hasSelectedBlocks = Object.keys(selectedBlocks).length > 0;
 
   return (
     <div className={bookingSection.bookingOuter}>
@@ -81,19 +85,41 @@ export default function BookingSection({selectedCoach, coachAvailability}) {
 
         {/*Calendar + Time + Payment*/}
         <div className="md:w-2/3 space-y-6">
-          <CalendarSection coachAvailability={coachAvailability} selectedDate={selectedDate} onSelectDate={setSelectedDate}/>
-          <TimeSlots
+          <CalendarSection
             coachAvailability={coachAvailability}
             selectedDate={selectedDate}
-            selectedTimes={getSelectedTimesForDate(selectedDate)}
-            onToggleTime={handletoggleTime}/>
-          <BookingSummary selectedBlocks={selectedBlocks} onClear={handleClearAll}/>
-          <PaymentForm/>
-          <OrderSummary/>
-          <button
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition">
-            Complete Booking
-          </button>
+            onSelectDate={setSelectedDate}
+          />
+
+          {/* Only show TimeSlots if a date is selected */}
+          {selectedDate && (
+            <TimeSlots
+              coachAvailability={coachAvailability}
+              selectedDate={selectedDate}
+              selectedTimes={getSelectedTimesForDate(selectedDate)}
+              onToggleTime={handletoggleTime}
+            />
+          )}
+
+          {/* Only show BookingSummary if there are selected blocks */}
+          {hasSelectedBlocks && (
+            <BookingSummary
+              selectedBlocks={selectedBlocks}
+              onClear={handleClearAll}
+            />
+          )}
+
+          {/* Only show payment and booking button if there are selections */}
+          {hasSelectedBlocks && (
+            <>
+              {/*<PaymentForm/>*/}
+              {/*<OrderSummary/>*/}
+              <button
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition">
+                Complete Booking
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

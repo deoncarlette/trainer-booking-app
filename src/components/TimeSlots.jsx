@@ -3,7 +3,6 @@ import { parse, addMinutes, format, isBefore, isAfter } from "date-fns";
 import { timeSlots } from '../utils/classnames';
 import clsx from 'clsx';
 
-
 /**
  * Converts an array of {start, end} objects into 30-minute intervals
  */
@@ -54,6 +53,7 @@ export default function TimeSlots({
                                     selectedTimes,
                                     onToggleTime
                                   }) {
+  // Don't render if no date is selected
   if (!selectedDate || !coachAvailability) return null;
 
   const dayKey = format(selectedDate, "EEEE").toLowerCase();
@@ -61,34 +61,40 @@ export default function TimeSlots({
   const slots = generate30MinSlotsFromRanges(ranges);
   const displayDate = format(selectedDate, "MMMM d, yyyy");
 
+  // Don't render if no slots are available for the selected date
+  if (slots.length === 0) {
+    return (
+      <div className={timeSlots.container}>
+        <h3 className={timeSlots.heading}>Available Time Slots</h3>
+        <p className={timeSlots.dateDisplay}>{displayDate}</p>
+        <p className={timeSlots.emptyState}>No available times for this date</p>
+      </div>
+    );
+  }
+
   return (
     <div className={timeSlots.container}>
       <h3 className={timeSlots.heading}>Available Time Slots</h3>
       <p className={timeSlots.dateDisplay}>{displayDate}</p>
 
-      {slots.length === 0 ? (
-        <p className={timeSlots.emptyState}>No available times</p>
-      ) : (
-        <div className={timeSlots.grid}>
-          {slots.map(({ start, end }) => {
-            const isSelected = selectedTimes?.includes(start);
+      <div className={timeSlots.grid}>
+        {slots.map(({ start, end }) => {
+          const isSelected = selectedTimes?.includes(start);
 
-            return (
-              <button
-                key={`${start}-${end}`}
-                onClick={() => onToggleTime?.(start)}
-                className={clsx(
-                  timeSlots.slotButton.base,
-                  isSelected ? timeSlots.slotButton.selected : timeSlots.slotButton.available
-                )}
-              >
-                {format(parse(start, "HH:mm", new Date()), "h:mm a")}
-              </button>
-            );
-          })}
-        </div>
-      )}
+          return (
+            <button
+              key={`${start}-${end}`}
+              onClick={() => onToggleTime?.(start)}
+              className={clsx(
+                timeSlots.slotButton.base,
+                isSelected ? timeSlots.slotButton.selected : timeSlots.slotButton.available
+              )}
+            >
+              {format(parse(start, "HH:mm", new Date()), "h:mm a")}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
-

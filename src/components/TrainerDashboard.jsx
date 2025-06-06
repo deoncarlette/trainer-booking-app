@@ -4,7 +4,7 @@ import "react-calendar/dist/Calendar.css";
 
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-export default function TrainerAvailabilityDashboard() {
+export default function TrainerDashboard() {
   const [weeklyAvailability, setWeeklyAvailability] = useState({});
   const [customAvailability, setCustomAvailability] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
