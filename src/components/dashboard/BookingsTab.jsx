@@ -20,9 +20,37 @@ export default function BookingsTab({ coach, bookings }) {
     return true; // 'all'
   });
 
-  const getInitials = (name) => {
-    if (!name) return 'C';
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  const getInitials = (firstName, lastName) => {
+    const first = firstName?.charAt(0)?.toUpperCase() || '';
+    const last = lastName?.charAt(0)?.toUpperCase() || '';
+    return first + last || 'C';
+  };
+
+  const getFullName = (firstName, lastName) => {
+    if (!firstName && !lastName) return 'Client';
+    return `${firstName || ''} ${lastName || ''}`.trim();
+  };
+
+  const formatTimeSlot = (timeSlot) => {
+    if (!timeSlot) return 'TBA';
+    const start = timeSlot.start || '';
+    const end = timeSlot.end || '';
+    if (start && end) {
+      return `${start} - ${end}`;
+    }
+    return start || end || 'TBA';
+  };
+
+  const calculateDuration = (timeSlot) => {
+    if (!timeSlot?.start || !timeSlot?.end) return 60;
+
+    const [startHour, startMin] = timeSlot.start.split(':').map(Number);
+    const [endHour, endMin] = timeSlot.end.split(':').map(Number);
+
+    const startMinutes = startHour * 60 + startMin;
+    const endMinutes = endHour * 60 + endMin;
+
+    return Math.max(endMinutes - startMinutes, 0);
   };
 
   const filterButtons = [
@@ -63,11 +91,11 @@ export default function BookingsTab({ coach, bookings }) {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
-                    {getInitials(booking.clientName)}
+                    {getInitials(booking.firstName, booking.lastName)}
                   </div>
                   <div>
-                    <p className="font-medium dark:text-white">{booking.clientName || 'Client'}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{booking.type || 'Training Session'}</p>
+                    <p className="font-medium dark:text-white">{getFullName(booking.firstName, booking.lastName)}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Training Session</p>
                   </div>
                 </div>
                 <span className={`${components.badge} ${dashboard.status[booking.status] || dashboard.status.pending}`}>
@@ -84,16 +112,16 @@ export default function BookingsTab({ coach, bookings }) {
                 </div>
                 <div>
                   <p className="text-gray-600 dark:text-gray-400">Time</p>
-                  <p className="dark:text-white">{booking.time || 'TBA'}</p>
+                  <p className="dark:text-white">{formatTimeSlot(booking.timeSlot)}</p>
                 </div>
                 <div>
                   <p className="text-gray-600 dark:text-gray-400">Duration</p>
-                  <p className="dark:text-white">{booking.duration || 60}min</p>
+                  <p className="dark:text-white">{calculateDuration(booking.timeSlot)}min</p>
                 </div>
                 <div>
                   <p className="text-gray-600 dark:text-gray-400">Revenue</p>
                   <p className="dark:text-white">
-                    ${(hourlyRate * (booking.duration || 60) / 60).toFixed(0)}
+                    ${(hourlyRate * calculateDuration(booking.timeSlot) / 60).toFixed(0)}
                   </p>
                 </div>
               </div>

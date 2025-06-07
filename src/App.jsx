@@ -73,10 +73,10 @@ export default function App() {
             }
           />
 
-          <Route path="/coach" element={<CoachesDashboard trainers={trainers} bookings={bookings} availability={availability} />} />
+          <Route path="/dashboard" element={<CoachesDashboard trainers={trainers} bookings={bookings} availability={availability} />} />
           {trainers.length > 0 && (
             <Route
-              path="/coach/:trainerId"
+              path="/dashboard/:trainerId"
               element={<CoachesDashboard trainers={trainers} bookings={bookings} availability={availability} />}
             />
           )}

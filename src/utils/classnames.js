@@ -7,6 +7,7 @@ const base = {
   container: "container mx-auto px-4",
   flexCenter: "flex items-center justify-center",
   flexBetween: "flex justify-between items-center",
+  flexStart: "flex items-center justify-start",
   flexCol: "flex flex-col",
 
   // Spacing
@@ -286,7 +287,7 @@ export const trainerProfile = {
     base.rounded.lg,
     "p-4 mb-4"
   ),
-  innerContainer: clsx(base.flexCenter, base.space.x3),
+  innerContainer: clsx(base.flexStart, base.space.x3),
   initials: clsx(
     base.size.avatar,
     colors.light.bg,
@@ -536,10 +537,9 @@ export const bookingSummary = {
   },
 }
 
-// Dashboard component styles
+// Dashboard component styles - MOBILE RESPONSIVE VERSION
 export const dashboard = {
   // Main layout
-
   layout: clsx(
     "min-h-screen",
     colors.light.bgDashboard,
@@ -547,10 +547,10 @@ export const dashboard = {
   ),
 
   mainContent: clsx(
-    "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+    "max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8"
   ),
 
-  // Header
+  // Header - Mobile responsive
   header: {
     container: clsx(
       colors.light.bg,
@@ -559,39 +559,38 @@ export const dashboard = {
     ),
 
     inner: clsx(
-      "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+      "max-w-7xl mx-auto px-2 sm:px-4 lg:px-8"
     ),
 
     content: clsx(
-      base.flexBetween,
-      "py-6"
+      "flex flex-col sm:flex-row sm:justify-between sm:items-center",
+      "py-4 sm:py-6 space-y-4 sm:space-y-0"
     ),
 
     left: clsx(
-      base.flexCenter,
-      base.space.x4
+      "flex items-center space-x-3 sm:space-x-4"
     ),
 
     avatar: clsx(
-      base.size.avatarSm,
+      "w-8 h-8 sm:w-10 sm:h-10",
       base.rounded.full,
       "object-cover"
     ),
 
     title: clsx(
-      "text-2xl font-bold",
+      "text-xl sm:text-2xl font-bold",
       colors.light.text,
       colors.dark.text
     ),
 
     subtitle: clsx(
+      "text-sm sm:text-base",
       colors.light.textMuted,
       colors.dark.textMuted
     ),
 
     right: clsx(
-      base.flexCenter,
-      base.space.x4
+      "flex items-center justify-end space-x-2 sm:space-x-4"
     ),
 
     iconButton: clsx(
@@ -601,33 +600,36 @@ export const dashboard = {
       "hover:text-gray-900 dark:hover:text-white"
     ),
 
-    primaryButton: components.button.secondary,
+    primaryButton: clsx(
+      components.button.secondary,
+      "text-sm px-3 py-2" // Smaller on mobile
+    ),
   },
 
-  // Navigation tabs
+  // Navigation tabs - Mobile responsive
   navigation: {
     container: clsx(
       colors.light.bg,
       colors.dark.bgDashboardCard,
       "border-b",
-      colors.dark.border
+      colors.dark.border,
+      "overflow-x-auto" // Allow horizontal scroll on mobile
     ),
 
     inner: clsx(
-      "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+      "max-w-7xl mx-auto px-2 sm:px-4 lg:px-8"
     ),
 
     tabs: clsx(
-      "flex",
-      base.space.x2,
-      "md:space-x-8"
+      "flex space-x-1 sm:space-x-2 md:space-x-8",
+      "min-w-max" // Prevent tabs from shrinking too much
     ),
 
     tab: {
       base: clsx(
-        base.flexCenter,
-        base.space.x2,
-        "py-4 px-1 border-b-2 font-medium text-sm",
+        "flex items-center space-x-1 sm:space-x-2",
+        "py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium",
+        "text-xs sm:text-sm whitespace-nowrap", // Prevent text wrapping
         base.transitionColors
       ),
 
@@ -644,92 +646,108 @@ export const dashboard = {
     },
   },
 
-  // Stats cards
+  // Stats cards - Mobile responsive grid
   stats: {
-    grid: base.grid.cols4,
+    grid: "grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4",
 
     card: clsx(
       components.dashboardCard,
-      base.flexBetween
+      "p-3 sm:p-6", // Smaller padding on mobile
+      "flex flex-col sm:flex-row sm:justify-between"
     ),
 
-    content: "flex-1",
+    content: "flex-1 mb-2 sm:mb-0",
 
     label: clsx(
-      "text-sm",
+      "text-xs sm:text-sm",
       colors.light.textMuted,
       colors.dark.textMuted
     ),
 
     value: clsx(
-      "text-2xl font-bold",
+      "text-lg sm:text-2xl font-bold",
       colors.light.text,
       colors.dark.text
     ),
 
     icon: clsx(
-      base.size.icon,
-      "flex-shrink-0"
+      "w-6 h-6 sm:w-8 sm:h-8",
+      "flex-shrink-0 self-center"
     ),
   },
 
-  // Content sections
+  // Content sections - Mobile responsive
   section: {
-    container: components.dashboardCard,
+    container: clsx(
+      components.dashboardCard,
+      "p-3 sm:p-6" // Smaller padding on mobile
+    ),
 
     header: clsx(
-      base.flexBetween,
-      "mb-4"
+      "flex flex-col sm:flex-row sm:justify-between sm:items-center",
+      "mb-4 space-y-2 sm:space-y-0"
     ),
 
     title: clsx(
-      "text-lg font-semibold",
+      "text-base sm:text-lg font-semibold",
       colors.dark.text
     ),
 
-    content: base.space.y4,
+    content: "space-y-3 sm:space-y-4",
 
     emptyState: clsx(
       colors.light.textMuted,
       colors.dark.textMuted,
-      "text-center py-8"
+      "text-center py-6 sm:py-8 text-sm sm:text-base"
     ),
   },
 
-  // Forms and inputs
+  // Forms and inputs - Mobile responsive
   form: {
-    group: "space-y-4",
+    group: "space-y-3 sm:space-y-4",
 
-    label: components.text.label,
+    label: clsx(
+      components.text.label,
+      "text-sm"
+    ),
 
-    input: components.input,
+    input: clsx(
+      components.input,
+      "text-sm sm:text-base" // Smaller text on mobile
+    ),
 
     textarea: clsx(
       components.input,
-      "resize-none"
+      "resize-none text-sm sm:text-base"
     ),
 
-    select: components.input,
+    select: clsx(
+      components.input,
+      "text-sm sm:text-base"
+    ),
 
     buttonGroup: clsx(
-      "flex",
-      base.space.x3,
-      "mt-6"
+      "flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3",
+      "mt-4 sm:mt-6"
     ),
 
-    primaryButton: components.button.secondary,
+    primaryButton: clsx(
+      components.button.secondary,
+      "w-full sm:w-auto text-sm sm:text-base"
+    ),
 
     secondaryButton: clsx(
       components.button.small,
-      "bg-gray-500 text-white hover:bg-gray-600"
+      "bg-gray-500 text-white hover:bg-gray-600",
+      "w-full sm:w-auto"
     ),
   },
 
-  // Tables and lists
+  // Tables - Mobile responsive
   table: {
-    container: "overflow-x-auto",
+    container: "overflow-x-auto -mx-3 sm:mx-0", // Extend to edges on mobile
 
-    table: "w-full border-collapse",
+    table: "w-full border-collapse min-w-max", // Prevent table from being too narrow
 
     header: clsx(
       "border-b",
@@ -737,7 +755,7 @@ export const dashboard = {
     ),
 
     headerCell: clsx(
-      "text-left p-3 font-medium",
+      "text-left p-2 sm:p-3 font-medium text-xs sm:text-sm",
       colors.light.textMuted,
       colors.dark.textMuted
     ),
@@ -750,21 +768,20 @@ export const dashboard = {
     ),
 
     cell: clsx(
-      "p-3",
+      "p-2 sm:p-3 text-xs sm:text-sm",
       colors.dark.text
     ),
   },
 
-  // Filter buttons
+  // Filter buttons - Mobile responsive
   filters: {
     container: clsx(
-      "flex",
-      base.space.x2
+      "flex flex-wrap gap-2"
     ),
 
     button: {
       base: clsx(
-        components.button.small,
+        "px-3 py-1.5 text-xs sm:text-sm rounded",
         base.transitionColors
       ),
 
@@ -779,37 +796,34 @@ export const dashboard = {
     },
   },
 
-  // Status badges
+  // Status badges - Mobile responsive
   status: {
-    confirmed: colors.status.success,
-    pending: colors.status.warning,
-    cancelled: colors.status.error,
+    confirmed: clsx(colors.status.success, "text-xs px-2 py-1"),
+    pending: clsx(colors.status.warning, "text-xs px-2 py-1"),
+    cancelled: clsx(colors.status.error, "text-xs px-2 py-1"),
   },
 
-  // Action buttons
+  // Action buttons - Mobile responsive
   actions: {
     container: clsx(
-      "flex",
-      base.space.x2,
-      "mt-3"
+      "flex flex-wrap gap-2 mt-3"
     ),
 
     edit: clsx(
-      components.button.small,
+      "px-3 py-1.5 text-xs rounded",
       colors.secondary.base,
       colors.secondary.hover
     ),
 
     delete: clsx(
-      components.button.small,
+      "px-3 py-1.5 text-xs rounded",
       "bg-red-500 text-white hover:bg-red-600"
     ),
 
     add: clsx(
-      components.button.small,
+      "px-3 py-1.5 text-xs rounded",
       "bg-green-500 text-white hover:bg-green-600",
-      base.flexCenter,
-      base.space.x1
+      "flex items-center space-x-1"
     ),
   },
 }

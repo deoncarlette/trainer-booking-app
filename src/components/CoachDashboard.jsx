@@ -2,7 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { useParams, Link } from "react-router-dom";
 import { Calendar, Clock, DollarSign, Users, Settings, Bell, TrendingUp } from 'lucide-react';
 import { format } from "date-fns";
+import { updateCoachProfile, updateCoachAvailability, updateCoachPricing } from '../utils/firebaseService';
 import { dashboard } from '../utils/classnames';
+
 
 // Individual Components
 import DashboardHeader from './dashboard/DashboardHeader';
@@ -23,6 +25,8 @@ export default function CoachesDashboard({ trainers = [], bookings = [], availab
 
   const [activeTab, setActiveTab] = useState('overview');
   const [editingProfile, setEditingProfile] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
   // Get coach data from Firebase props
   const coach = useMemo(() => {
@@ -30,10 +34,22 @@ export default function CoachesDashboard({ trainers = [], bookings = [], availab
   }, [trainers, coachId]);
 
   // Get coach-specific bookings
-  const coachBookings = useMemo(() => {
-    return bookings.filter(booking => booking.id === coachId) || [];
+  const coachBookingData = useMemo(() => {
+    return bookings.find(booking => booking.id === coachId) || null;
   }, [bookings, coachId]);
-  console.log("coachBookings", coachBookings)
+
+  console.log("coachBookingData", coachBookingData);
+
+  const coachBookings = useMemo(() => {
+    if (!coachBookingData?.bookings) return [];
+
+    // Convert bookings map to array with keys as booking IDs
+    return Object.entries(coachBookingData.bookings).map(([bookingId, bookingData]) => ({
+      id: bookingId,
+      ...bookingData
+    }));
+  }, [coachBookingData]);
+  console.log("coachBookings", coachBookings);
 
   // Get coach-specific availability
   const coachAvailability = useMemo(() => {
@@ -92,12 +108,59 @@ export default function CoachesDashboard({ trainers = [], bookings = [], availab
     );
   }
 
+  const handleProfileUpdate = async (profileData) => {
+    setLoading(true);
+    const result = await updateCoachProfile(coachId, profileData);
+
+    if (result.success) {
+      setMessage('Profile updated successfully!');
+      // Optionally refresh data or update local state
+    } else {
+      setMessage(`Error: ${result.error}`);
+    }
+
+    setLoading(false);
+    setTimeout(() => setMessage(''), 3000); // Clear message after 3s
+  };
+
+  const handleAvailabilityUpdate = async (availabilityData) => {
+    setLoading(true);
+    const result = await updateCoachAvailability(coachId, availabilityData);
+
+    if (result.success) {
+      setMessage('Availability updated successfully!');
+    } else {
+      setMessage(`Error: ${result.error}`);
+    }
+
+    setLoading(false);
+    setTimeout(() => setMessage(''), 3000);
+  };
+
+  const handlePricingUpdate = async (pricingData) => {
+    setLoading(true);
+    const result = await updateCoachPricing(coachId, pricingData);
+
+    if (result.success) {
+      setMessage('Pricing updated successfully!');
+    } else {
+      setMessage(`Error: ${result.error}`);
+    }
+
+    setLoading(false);
+    setTimeout(() => setMessage(''), 3000);
+  }
+
   const renderActiveTab = () => {
     const commonProps = {
       coach,
       bookings: coachBookings,
       availability: coachAvailability,
-      stats
+      stats,
+      loading, // Pass loading state
+      onProfileUpdate: handleProfileUpdate,
+      onAvailabilityUpdate: handleAvailabilityUpdate,
+      onPricingUpdate: handlePricingUpdate,
     };
 
     switch (activeTab) {
@@ -119,6 +182,16 @@ export default function CoachesDashboard({ trainers = [], bookings = [], availab
   return (
     <div className={dashboard.layout}>
       <DashboardHeader coach={coach} />
+      {/* Show loading/success messages */}
+      {message && (
+        <div className={`fixed top-4 right-4 p-3 rounded-lg shadow-lg z-50 ${
+          message.includes('Error')
+            ? 'bg-red-500 text-white'
+            : 'bg-green-500 text-white'
+        }`}>
+          {message}
+        </div>
+      )}
       <DashboardNavigation
         tabs={tabs}
         activeTab={activeTab}

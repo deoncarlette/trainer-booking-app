@@ -16,22 +16,25 @@ export default function DashboardHeader({ coach }) {
                 e.target.src = '/default-avatar.png';
               }}
             />
-            <div>
+            <div className="min-w-0 flex-1">
               <h1 className={dashboard.header.title}>
-                Coach Dashboard
+                <span className="hidden sm:inline">Coach Dashboard</span>
+                <span className="sm:hidden">Dashboard</span>
               </h1>
               <p className={dashboard.header.subtitle}>
-                Welcome back, {coach.name || 'Coach'}
+                <span className="hidden sm:inline">Welcome back, {coach.name || 'Coach'}</span>
+                <span className="sm:hidden">{coach.name || 'Coach'}</span>
               </p>
             </div>
           </div>
 
           <div className={dashboard.header.right}>
             <button className={dashboard.header.iconButton}>
-              <Bell className="w-5 h-5" />
+              <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button className={dashboard.header.primaryButton}>
-              View Public Profile
+              <span className="hidden sm:inline">View Public Profile</span>
+              <span className="sm:hidden">Profile</span>
             </button>
           </div>
         </div>

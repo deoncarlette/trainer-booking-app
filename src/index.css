@@ -43,3 +43,79 @@ body {
     color: #9ca3af;
     cursor: not-allowed;
 }
+
+/* Add this to your global CSS file (e.g., globals.css or index.css) */
+
+/* Custom xs breakpoint for very small screens (475px+) */
+@media (min-width: 475px) {
+    .xs\:inline {
+        display: inline !important;
+    }
+
+    .xs\:hidden {
+        display: none !important;
+    }
+
+    .xs\:flex-row {
+        flex-direction: row !important;
+    }
+
+    .xs\:items-center {
+        align-items: center !important;
+    }
+
+    .xs\:space-y-0 > :not([hidden]) ~ :not([hidden]) {
+        --tw-space-y-reverse: 0;
+        margin-top: calc(0px * calc(1 - var(--tw-space-y-reverse))) !important;
+        margin-bottom: calc(0px * var(--tw-space-y-reverse)) !important;
+    }
+
+    .xs\:space-x-3 > :not([hidden]) ~ :not([hidden]) {
+        --tw-space-x-reverse: 0;
+        margin-right: calc(0.75rem * var(--tw-space-x-reverse)) !important;
+        margin-left: calc(0.75rem * calc(1 - var(--tw-space-x-reverse))) !important;
+    }
+
+    .xs\:w-auto {
+        width: auto !important;
+    }
+}
+
+/* Improve touch targets on mobile */
+@media (max-width: 640px) {
+    /* Ensure minimum touch target size for accessibility */
+    button {
+        min-height: 44px;
+    }
+
+    input[type="time"] {
+        min-height: 44px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    textarea,
+    select {
+        min-height: 44px;
+    }
+}
+
+/* Navigation tabs scroll styling */
+.dashboard-nav-tabs {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(59, 130, 246, 0.5) transparent;
+}
+
+.dashboard-nav-tabs::-webkit-scrollbar {
+    height: 2px;
+}
+
+.dashboard-nav-tabs::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.5);
+    border-radius: 1px;
+}
+
+.dashboard-nav-tabs::-webkit-scrollbar-track {
+    background: transparent;
+}

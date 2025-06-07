@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Edit3, X } from 'lucide-react';
 import { dashboard, components } from '../../utils/classnames';
 
-export default function ProfileTab({ coach, editingProfile, setEditingProfile }) {
+export default function ProfileTab({ coach, editingProfile, setEditingProfile, onProfileUpdate, loading }) {
   const [formData, setFormData] = useState({
     name: coach.name || '',
     email: coach.email || '',
@@ -27,9 +27,10 @@ export default function ProfileTab({ coach, editingProfile, setEditingProfile })
     }));
   };
 
-  const handleSave = () => {
-    // Here you would save to Firebase
-    console.log('Saving profile:', formData);
+  const handleSave = async () => {
+    if (onProfileUpdate) {
+      await onProfileUpdate(formData);
+    }
     setEditingProfile(false);
   };
 
@@ -194,13 +195,17 @@ export default function ProfileTab({ coach, editingProfile, setEditingProfile })
               <div className={dashboard.form.buttonGroup}>
                 <button
                   onClick={handleSave}
-                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                  disabled={loading}
+                  className={`px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed ${
+                    loading ? 'cursor-wait' : ''
+                  }`}
                 >
-                  Save Changes
+                  {loading ? 'Saving...' : 'Save Changes'}
                 </button>
                 <button
                   onClick={handleCancel}
-                  className={dashboard.form.secondaryButton}
+                  disabled={loading}
+                  className={`${dashboard.form.secondaryButton} disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   Cancel
                 </button>

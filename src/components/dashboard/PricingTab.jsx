@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { dashboard } from '../../utils/classnames';
 
-export default function PricingTab({ coach }) {
+export default function PricingTab({ coach, onPricingUpdate, loading }) {
   const [hourlyRate, setHourlyRate] = useState(coach.price || coach.hourlyRate || 0);
 
-  const handleSavePricing = () => {
-    // Here you would save to Firebase
-    console.log('Saving pricing:', { hourlyRate });
+  const handleSavePricing = async () => {
+    if (onPricingUpdate) {
+      await onPricingUpdate({ hourlyRate });
+    }
   };
 
   const packages = [
@@ -73,9 +74,12 @@ export default function PricingTab({ coach }) {
 
         <button
           onClick={handleSavePricing}
-          className={dashboard.form.primaryButton}
+          disabled={loading}
+          className={`${dashboard.form.primaryButton} disabled:opacity-50 disabled:cursor-not-allowed ${
+            loading ? 'cursor-wait' : ''
+          }`}
         >
-          Update Pricing
+          {loading ? 'Updating...' : 'Update Pricing'}
         </button>
       </div>
     </div>
