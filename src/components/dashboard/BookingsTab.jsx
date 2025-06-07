@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { format } from 'date-fns';
+import {format, parse} from 'date-fns';
 import { dashboard, components } from '../../utils/classnames';
 
 export default function BookingsTab({ coach, bookings }) {
@@ -31,10 +31,14 @@ export default function BookingsTab({ coach, bookings }) {
     return `${firstName || ''} ${lastName || ''}`.trim();
   };
 
+  const formatTime = (time) => {
+    return format(parse(time, "HH:mm", new Date()), "h:mm a")
+  }
+
   const formatTimeSlot = (timeSlot) => {
     if (!timeSlot) return 'TBA';
-    const start = timeSlot.start || '';
-    const end = timeSlot.end || '';
+    const start = timeSlot.start ? formatTime(timeSlot.start) : '';
+    const end = timeSlot.end ? formatTime(timeSlot.end) : '';
     if (start && end) {
       return `${start} - ${end}`;
     }

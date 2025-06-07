@@ -48,13 +48,19 @@ export default function OverviewTab({ coach, stats }) {
     },
     {
       label: "Week Earnings",
-      value: `$${totalEarnings.toFixed(0)}`,
+      value: new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      }).format(totalEarnings || 0),
       icon: DollarSign,
       color: "text-yellow-500"
     },
     {
       label: "Hourly Rate",
-      value: `$${hourlyRate}`,
+      value: new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      }).format(hourlyRate || 0),
       icon: TrendingUp,
       color: "text-purple-500"
     }

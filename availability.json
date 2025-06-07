@@ -5,55 +5,75 @@
       "monday": {
         "0": {
           "start": "15:00",
-          "end": "15:30"
+          "end": "15:30",
+          "minSessionLength": 30,
+          "maxSessionLength": 120
         },
         "1": {
           "start": "16:00",
-          "end": "19:00"
+          "end": "19:00",
+          "minSessionLength": 30,
+          "maxSessionLength": 60
         }
       },
       "tuesday": {
         "0": {
           "start": "15:00",
-          "end": "16:00"
+          "end": "16:00",
+          "minSessionLength": 30,
+          "maxSessionLength": 120
         }
       },
       "wednesday": {
         "0": {
           "start": "12:00",
-          "end": "14:30"
+          "end": "14:30",
+          "minSessionLength": 30,
+          "maxSessionLength": 240
         },
         "1": {
           "start": "16:00",
-          "end": "19:00"
+          "end": "19:00",
+          "minSessionLength": 30,
+          "maxSessionLength": 120
         }
       },
       "thursday": {
         "0": {
           "start": "18:00",
-          "end": "21:00"
+          "end": "21:00",
+          "minSessionLength": 30,
+          "maxSessionLength": 120
         }
       },
       "friday": {
         "0": {
           "start": "06:00",
-          "end": "09:30"
+          "end": "09:30",
+          "minSessionLength": 30,
+          "maxSessionLength": 120
         },
         "1": {
           "start": "16:00",
-          "end": "19:00"
+          "end": "19:00",
+          "minSessionLength": 30,
+          "maxSessionLength": 120
         }
       },
       "saturday": {
         "0": {
           "start": "15:00",
-          "end": "16:00"
+          "end": "16:00",
+          "minSessionLength": 30,
+          "maxSessionLength": 300
         }
       },
       "sunday": {
         "0": {
           "start": "15:00",
-          "end": "16:00"
+          "end": "16:00",
+          "minSessionLength": 30,
+          "maxSessionLength": 90
         }
       }
     },
@@ -61,7 +81,9 @@
       "2025-03-14": {
         "0": {
           "start": "10:00",
-          "end": "13:00"
+          "end": "13:00",
+          "minSessionLength": 30,
+          "maxSessionLength": 120
         }
       }
     },

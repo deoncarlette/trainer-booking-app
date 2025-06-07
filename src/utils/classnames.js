@@ -90,10 +90,10 @@ const colors = {
   dark: {
     bg: "dark:bg-stone-800",
     bgAlt: "dark:bg-black",
-    bgInput: "dark:bg-stone-800",
+    bgInput: "dark:bg-stone-700",
     bgCard: "dark:bg-stone-900",
-    bgDashboard: "dark:bg-gray-900",
-    bgDashboardCard: "dark:bg-gray-800",
+    bgDashboard: "dark:bg-black",
+    bgDashboardCard: "dark:bg-zinc-900",
     text: "dark:text-stone-100",
     textAlt: "dark:text-gray-100",
     textMuted: "dark:text-gray-400",
@@ -108,7 +108,7 @@ const colors = {
     bg: "bg-white",
     bgAlt: "bg-gray-50",
     bgInput: "bg-gray-100",
-    bgDashboard: "bg-gray-50",
+    bgDashboard: "bg-gray-100",
     text: "text-gray-800",
     textMuted: "text-gray-600",
     textLight: "text-gray-700",
@@ -542,6 +542,7 @@ export const dashboard = {
   // Main layout
   layout: clsx(
     "min-h-screen",
+    "border-radius: 0.5rem",
     colors.light.bgDashboard,
     colors.dark.bgDashboard
   ),
@@ -713,7 +714,7 @@ export const dashboard = {
 
     input: clsx(
       components.input,
-      "text-sm sm:text-base" // Smaller text on mobile
+      "text-sm sm:text-base, min-h-[44px]" // Smaller text on mobile
     ),
 
     textarea: clsx(
@@ -740,6 +741,19 @@ export const dashboard = {
       components.button.small,
       "bg-gray-500 text-white hover:bg-gray-600",
       "w-full sm:w-auto"
+    ),
+
+    timePicker: clsx(
+      // "w-full",
+      colors.light.borderInput,
+      colors.light.bgInput,
+      colors.dark.bgInput,
+      colors.dark.text,
+      colors.dark.borderInput,
+      base.rounded.sm,
+      "px-2", // Only horizontal padding
+      "border",
+      "min-h-[44px]", // Move min-height here
     ),
   },
 
@@ -781,7 +795,7 @@ export const dashboard = {
 
     button: {
       base: clsx(
-        "px-3 py-1.5 text-xs sm:text-sm rounded",
+        "px-3 py-1.5 text-xs sm:text-sm rounded w-20",
         base.transitionColors
       ),
 
@@ -812,18 +826,21 @@ export const dashboard = {
     edit: clsx(
       "px-3 py-1.5 text-xs rounded",
       colors.secondary.base,
-      colors.secondary.hover
+      colors.secondary.hover,
+      "w-20"
     ),
 
     delete: clsx(
       "px-3 py-1.5 text-xs rounded",
-      "bg-red-500 text-white hover:bg-red-600"
+      "bg-red-500 text-white hover:bg-red-600",
+      "w-20"
     ),
 
     add: clsx(
       "px-3 py-1.5 text-xs rounded",
       "bg-green-500 text-white hover:bg-green-600",
-      "flex items-center space-x-1"
+      "flex items-center space-x-1",
+      "w-20"
     ),
   },
 }
