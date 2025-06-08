@@ -1,36 +1,74 @@
-import React from "react";
-import {sessionDetails} from "../utils/classnames";
+import React, { useState, useEffect } from 'react';
+import { sessionDetails } from '../utils/classnames';
 
-export default function SessionDetails() {
+export default function SessionDetails({
+                                         sessionDurations,
+                                         onSessionDetailsChange // Add callback to parent
+                                       }) {
+  const [focusArea, setFocusArea] = useState('Shooting Technique');
+  const [skillLevel, setSkillLevel] = useState('Beginner');
+  const [notes, setNotes] = useState('');
+
+  // Notify parent when session details change
+  useEffect(() => {
+    if (onSessionDetailsChange) {
+      onSessionDetailsChange({
+        technique: focusArea,
+        skillLevel,
+        notes
+      });
+    }
+  }, [focusArea, skillLevel, notes, onSessionDetailsChange]);
+
   return (
     <div className={sessionDetails.container}>
       <h4 className={sessionDetails.h4}>Session Details</h4>
       <div className={sessionDetails.innerContainer}>
         <div>
-          <label htmlFor="focus-area" className={sessionDetails.label}>Focus Area</label>
-          <select id="focus-area" className={sessionDetails.text}>
-            <option>Shooting Technique</option>
-            <option>Dribbling & Ball Handling</option>
-            <option>Defensive Skills</option>
-            <option>Conditioning & Agility</option>
-            <option>Game Strategy</option>
+          <label className={sessionDetails.label}>Focus Area</label>
+          <select
+            value={focusArea}
+            onChange={(e) => setFocusArea(e.target.value)}
+            className={sessionDetails.text}
+          >
+            <option value="Shooting Technique">Shooting Technique</option>
+            <option value="Ball Handling">Ball Handling</option>
+            <option value="Defense">Defense</option>
+            <option value="Conditioning">Conditioning</option>
+            <option value="Game Strategy">Game Strategy</option>
+            <option value="General Skills">General Skills</option>
           </select>
         </div>
 
         <div>
-          <label htmlFor="skill-level" className={sessionDetails.label}>Your Skill Level</label>
-          <select id="skill-level" className={sessionDetails.text}>
-            <option>Beginner</option>
-            <option>Intermediate</option>
-            <option>Advanced</option>
-            <option>Elite/Professional</option>
+          <label className={sessionDetails.label}>Your Skill Level</label>
+          <select
+            value={skillLevel}
+            onChange={(e) => setSkillLevel(e.target.value)}
+            className={sessionDetails.text}
+          >
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+            <option value="Elite">Elite</option>
           </select>
         </div>
 
         <div>
-          <label htmlFor="notes" className={sessionDetails.label}>Notes (optional)</label>
-          <textarea id="notes" rows="2" className={sessionDetails.text} placeholder="Any specific areas you'd like to work on..."></textarea>
+          <label className={sessionDetails.label}>Notes (optional)</label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Any specific areas you'd like to work on..."
+            className={`${sessionDetails.text} resize-none h-20`}
+          />
         </div>
+
+        {sessionDurations && (
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            Session Duration: {sessionDurations.min}-{sessionDurations.max} minutes
+          </div>
+        )}
       </div>
     </div>
   );

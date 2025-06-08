@@ -173,17 +173,47 @@ export default function BookingsTab({ coach, bookings }) {
     }
   };
 
+  // Function to get the date range text based on current filter
+  const getDateRangeText = () => {
+    const today = new Date();
+
+    switch (filter) {
+      case 'today':
+        return format(today, 'MMM d, yyyy');
+
+      case 'week':
+        const weekStart = startOfWeek(today, { weekStartsOn: 0 }); // Sunday
+        const weekEnd = endOfWeek(today, { weekStartsOn: 0 }); // Saturday
+        return `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d, yyyy')}`;
+
+      case 'month':
+        return format(today, 'MMMM yyyy');
+
+      default:
+        return null; // No date range for 'all'
+    }
+  };
+
   const filterButtons = [
     { id: 'all', label: 'All' },
     { id: 'today', label: 'Today' },
-    { id: 'week', label: 'This Week' },
-    { id: 'month', label: 'This Month' }
+    { id: 'week', label: 'Week' },
+    { id: 'month', label: 'Month' }
   ];
 
   return (
     <div className={dashboard.section.container}>
       <div className={dashboard.section.header}>
-        <h3 className={dashboard.section.title}>Upcoming Bookings</h3>
+        <div>
+          <h3 className={dashboard.section.title}>
+            Upcoming Bookings
+            {getDateRangeText() && (
+              <span className="text-lg font-normal text-gray-600 dark:text-gray-400 ml-2">
+                ({getDateRangeText()})
+              </span>
+            )}
+          </h3>
+        </div>
         <div className={dashboard.filters.container}>
           {filterButtons.map(button => (
             <button
@@ -216,7 +246,10 @@ export default function BookingsTab({ coach, bookings }) {
                   </div>
                   <div>
                     <p className="font-medium dark:text-white">{getFullName(booking.firstName, booking.lastName)}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Training Session</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {booking.sessionDetails?.technique || "Training Session"}
+                      {booking.sessionDetails?.skillLevel && ` - ${booking.sessionDetails.skillLevel}`}
+                    </p>
                   </div>
                 </div>
                 <span className={`${components.badge} ${dashboard.status[booking.status] || dashboard.status.pending}`}>

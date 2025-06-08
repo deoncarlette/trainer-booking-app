@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+// Helper function to check if a slot is in default state (12am-12am)
+const isDefaultSlot = (slot) => {
+  return slot.start === "00:00" && slot.end === "00:00";
+};import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Save } from 'lucide-react';
 import { dashboard } from '../../utils/classnames';
 
 // Custom Time Picker Component
-const TimePicker = ({ value, onChange, className }) => {
+const TimePicker = ({ value, onChange, className, isDefaultSlot }) => {
   // Convert 24-hour time to 12-hour format
   const convertTo12Hour = (time24) => {
-    if (!time24) return { hour: '09', minute: '00', period: 'AM' };
+    if (!time24) return { hour: '12', minute: '00', period: 'AM' };
 
     const [hours, minutes] = time24.split(':');
     const hour24 = parseInt(hours);
@@ -47,8 +50,11 @@ const TimePicker = ({ value, onChange, className }) => {
     return <option key={m} value={m}>{m}</option>;
   });
 
+  // Style for default slots (12am-12am)
+  const defaultSlotStyle = isDefaultSlot ? 'border-dashed border-2 border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20' : '';
+
   return (
-    <div className={`inline-flex items-center border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 ${className}`}>
+    <div className={`inline-flex items-center border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 ${className} ${defaultSlotStyle}`}>
       <select
         value={hour}
         onChange={(e) => handleTimeChange(e.target.value, minute, period)}
@@ -117,6 +123,145 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
 
   const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
+  // Helper function to convert time to minutes for comparison
+  const timeToMinutes = (time24) => {
+    if (!time24) return 0;
+    const [hours, minutes] = time24.split(':').map(Number);
+    return hours * 60 + minutes;
+  };
+
+  // Helper function to convert minutes back to 24-hour time
+  const minutesToTime = (minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+  };
+
+  // Function to merge overlapping slots for a specific day
+  const mergeOverlappingSlots = (day) => {
+    const daySlots = weeklyAvailability[day] || {};
+    if (Object.keys(daySlots).length < 2) return;
+
+    // Get non-default slots and sort by start time
+    const slotsArray = Object.entries(daySlots)
+      .filter(([, slot]) => !isDefaultSlot(slot))
+      .map(([key, slot]) => ({
+        key,
+        ...slot,
+        startMinutes: timeToMinutes(slot.start),
+        endMinutes: timeToMinutes(slot.end)
+      }))
+      .sort((a, b) => a.startMinutes - b.startMinutes);
+
+    if (slotsArray.length < 2) return;
+
+    // Merge overlapping ranges
+    const merged = [];
+    const slotsToRemove = new Set();
+    let current = { ...slotsArray[0] };
+
+    for (let i = 1; i < slotsArray.length; i++) {
+      const next = slotsArray[i];
+
+      // Check if ranges overlap
+      if (current.endMinutes > next.startMinutes) {
+        // Merge ranges - extend current to include next
+        current.endMinutes = Math.max(current.endMinutes, next.endMinutes);
+        // Keep the wider session duration range
+        current.minSessionLength = Math.min(
+          parseInt(current.minSessionLength),
+          parseInt(next.minSessionLength)
+        ).toString();
+        current.maxSessionLength = Math.max(
+          parseInt(current.maxSessionLength),
+          parseInt(next.maxSessionLength)
+        ).toString();
+        // Mark the next slot for removal
+        slotsToRemove.add(next.key);
+      } else {
+        // No overlap, add current to merged and move to next
+        merged.push(current);
+        current = { ...next };
+      }
+    }
+
+    // Add the last range
+    merged.push(current);
+
+    // Update the state
+    setWeeklyAvailability(prev => {
+      const newDaySlots = { ...prev[day] };
+
+      // Remove merged slots
+      slotsToRemove.forEach(key => {
+        delete newDaySlots[key];
+      });
+
+      // Update the first merged slot with new times
+      if (merged.length > 0) {
+        const firstMerged = merged[0];
+        newDaySlots[firstMerged.key] = {
+          start: minutesToTime(firstMerged.startMinutes),
+          end: minutesToTime(firstMerged.endMinutes),
+          minSessionLength: firstMerged.minSessionLength,
+          maxSessionLength: firstMerged.maxSessionLength
+        };
+      }
+
+      return {
+        ...prev,
+        [day]: newDaySlots
+      };
+    });
+  };
+  const isDefaultSlot = (slot) => {
+    return slot.start === "00:00" && slot.end === "00:00";
+  };
+
+  // Function to sort slots by time without merging (put default slots at end)
+  const sortSlots = (slotsObject) => {
+    if (!slotsObject || Object.keys(slotsObject).length === 0) return {};
+
+    // Convert to array, sort by start time, then convert back to object
+    // Put default slots (12am-12am) at the end
+    const sortedEntries = Object.entries(slotsObject)
+      .sort(([, a], [, b]) => {
+        const aIsDefault = isDefaultSlot(a);
+        const bIsDefault = isDefaultSlot(b);
+
+        // Default slots go to the end
+        if (aIsDefault && !bIsDefault) return 1;
+        if (!aIsDefault && bIsDefault) return -1;
+        if (aIsDefault && bIsDefault) return 0;
+
+        // Both are real slots, sort by time
+        return timeToMinutes(a.start) - timeToMinutes(b.start);
+      });
+
+    // Return as object with original keys preserved
+    return Object.fromEntries(sortedEntries);
+  };
+
+  // Function to detect overlapping slots for display warning (skip default slots)
+  const hasOverlappingSlots = (slotsObject) => {
+    if (!slotsObject || Object.keys(slotsObject).length < 2) return false;
+
+    const sortedSlots = Object.values(slotsObject)
+      .filter(slot => !isDefaultSlot(slot)) // Only check non-default slots
+      .map(slot => ({
+        start: timeToMinutes(slot.start),
+        end: timeToMinutes(slot.end)
+      }))
+      .sort((a, b) => a.start - b.start);
+
+    for (let i = 0; i < sortedSlots.length - 1; i++) {
+      if (sortedSlots[i].end > sortedSlots[i + 1].start) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   // Initialize availability from Firebase data
   useEffect(() => {
     if (initialAvailability?.weeklyAvailability) {
@@ -154,8 +299,8 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
       [day]: {
         ...prev[day],
         [nextKey]: {
-          start: "09:00",
-          end: "17:00",
+          start: "00:00",
+          end: "00:00",
           minSessionLength: "30",
           maxSessionLength: "120"
         }
@@ -210,7 +355,12 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
 
   return (
     <div className={dashboard.section.container}>
-      <h3 className={dashboard.section.title}>Weekly Availability</h3>
+      <div className={dashboard.section.header}>
+        <h3 className={dashboard.section.title}>Weekly Availability</h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Set your available hours and session durations. Time slots are automatically sorted by start time.
+        </p>
+      </div>
 
       <div className={dashboard.section.content}>
         {days.map(day => (
@@ -227,19 +377,46 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
             </div>
 
             <div className="space-y-2 sm:space-y-3">
-              {Object.entries(weeklyAvailability[day] || {}).map(([slotKey, slot]) => (
+              {hasOverlappingSlots(weeklyAvailability[day]) && (
+                <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-yellow-600 dark:text-yellow-400">⚠️</span>
+                      <span className="text-sm text-yellow-800 dark:text-yellow-300">
+                        You have overlapping time slots. Would you like to merge them to avoid conflicts?
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => mergeOverlappingSlots(day)}
+                      className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white text-xs rounded transition-colors ml-3 whitespace-nowrap"
+                    >
+                      Merge Slots
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {Object.values(weeklyAvailability[day] || {}).some(slot => isDefaultSlot(slot)) && (
+                <div className="p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded text-sm text-blue-800 dark:text-blue-300">
+                  💡 New slots start at 12:00 AM - 12:00 AM. Please update them with your actual availability times.
+                </div>
+              )}
+
+              {Object.entries(sortSlots(weeklyAvailability[day] || {})).map(([slotKey, slot]) => (
                 <div key={slotKey} className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                   <div className="flex items-center space-x-2 sm:space-x-3 flex-1">
                     <TimePicker
-                      value={slot.start || "09:00"}
+                      value={slot.start || "00:00"}
                       onChange={(value) => updateAvailability(day, slotKey, 'start', value)}
                       className={dashboard.form.timePicker}
+                      isDefaultSlot={isDefaultSlot(slot)}
                     />
                     <span className="dark:text-white text-sm sm:text-base px-1 sm:px-0">to</span>
                     <TimePicker
-                      value={slot.end || "17:00"}
+                      value={slot.end || "00:00"}
                       onChange={(value) => updateAvailability(day, slotKey, 'end', value)}
                       className={dashboard.form.timePicker}
+                      isDefaultSlot={isDefaultSlot(slot)}
                     />
 
                     <span className="p-4"></span>
@@ -273,12 +450,22 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
                 </div>
               ))}
 
-              {Object.keys(weeklyAvailability[day] || {}).length === 0 && (
+              {Object.keys(sortSlots(weeklyAvailability[day] || {})).length === 0 && (
                 <p className="text-gray-500 dark:text-gray-400 italic text-sm">No availability set</p>
               )}
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+        <h4 className="font-medium text-blue-900 dark:text-blue-300 mb-2">
+          Smart Time Management
+        </h4>
+        <p className="text-sm text-blue-800 dark:text-blue-400">
+          New slots start at 12:00 AM - 12:00 AM and won't cause conflicts until you set real times.
+          Time slots are automatically sorted by start time. When overlaps are detected, you can choose to merge them with a single click.
+        </p>
       </div>
 
       <div className={`${dashboard.form.buttonGroup} flex-col sm:flex-row space-y-2 sm:space-y-0`}>

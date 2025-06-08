@@ -12,18 +12,30 @@ import BookingSummary from "./BookingSumary";
 import { format } from "date-fns";
 
 export default function BookingSection({selectedCoach, coachAvailability}) {
-  const [selectedDate, setSelectedDate] = useState(null); // Start with null instead of new Date()
-  const [selectedTime, setSelectedTime] = useState(new Date());
+  // Get session durations from coach data or use defaults
+  const sessionDurations = {
+    min: selectedCoach?.minSessionDuration || selectedCoach?.sessionDurations?.min || 30,
+    max: selectedCoach?.maxSessionDuration || selectedCoach?.sessionDurations?.max || 120
+  };
 
-  // Updated structure to match BookingSummary expectations
+  const [selectedDate, setSelectedDate] = useState(null); // Start with null instead of new Date()
+  const [selectedDuration, setSelectedDuration] = useState(sessionDurations.min);
+
+  // State for session details from the form
+  const [sessionDetails, setSessionDetails] = useState({
+    technique: 'Shooting Technique',
+    skillLevel: 'Beginner',
+    notes: ''
+  });
+
+  // Updated structure to include duration information
   const [selectedBlocks, setSelectedBlocks] = useState({
     // "2025-06-05": [
-    //   { time: "15:00", coach: { id: "1", name: "Coach Nique", price: 65 } },
-    //   { time: "15:30", coach: { id: "1", name: "Coach Nique", price: 65 } }
+    //   { time: "15:00", coach: { id: "1", name: "Coach Nique", price: 65 }, duration: 90 }
     // ]
   });
 
-  const handleSelectTime = (date, time) => {
+  const handleSelectTime = (date, time, duration = selectedDuration, sessionInfo = {}) => {
     if (!selectedCoach) return;
     const dateKey = format(date, "yyyy-MM-dd");
 
@@ -36,9 +48,13 @@ export default function BookingSection({selectedCoach, coachAvailability}) {
         // Remove the time slot
         updated = existing.filter(entry => entry.time !== time);
       } else {
-        // Add the time slot
+        // Add the time slot with duration and session info
         updated = [...existing, {
           time,
+          duration,
+          technique: sessionInfo.technique || sessionDetails.technique,
+          skillLevel: sessionInfo.skillLevel || sessionDetails.skillLevel,
+          notes: sessionInfo.notes || sessionDetails.notes,
           coach: {
             id: selectedCoach.id,
             name: selectedCoach.name,
@@ -61,7 +77,27 @@ export default function BookingSection({selectedCoach, coachAvailability}) {
   };
 
   const handleClearAll = () => setSelectedBlocks({});
-  const handletoggleTime = (time) => handleSelectTime(selectedDate, time);
+
+  const handleRemoveSession = (dateKey, timeKey) => {
+    setSelectedBlocks((prev) => {
+      const existing = prev[dateKey] || [];
+      const updated = existing.filter(entry => entry.time !== timeKey);
+
+      // If no times left for this date, remove the date entirely
+      if (updated.length === 0) {
+        const { [dateKey]: removed, ...rest } = prev;
+        return rest;
+      }
+
+      return {
+        ...prev,
+        [dateKey]: updated,
+      };
+    });
+  };
+
+  const handletoggleTime = (time, duration, sessionInfo) =>
+    handleSelectTime(selectedDate, time, duration, sessionInfo);
 
   // Get selected times for the current date to pass to TimeSlots
   const getSelectedTimesForDate = (date) => {
@@ -80,7 +116,10 @@ export default function BookingSection({selectedCoach, coachAvailability}) {
       <div className={bookingSection.bookingInner}>
         <div className={bookingSection.session}>
           <TrainerProfile trainer={selectedCoach}/>
-          <SessionDetails/>
+          <SessionDetails
+            sessionDurations={sessionDurations}
+            onSessionDetailsChange={setSessionDetails}
+          />
         </div>
 
         {/*Calendar + Time + Payment*/}
@@ -98,6 +137,11 @@ export default function BookingSection({selectedCoach, coachAvailability}) {
               selectedDate={selectedDate}
               selectedTimes={getSelectedTimesForDate(selectedDate)}
               onToggleTime={handletoggleTime}
+              sessionDurations={sessionDurations}
+              selectedDuration={selectedDuration}
+              onDurationChange={setSelectedDuration}
+              selectedCoach={selectedCoach}
+              sessionDetails={sessionDetails}
             />
           )}
 
@@ -106,6 +150,7 @@ export default function BookingSection({selectedCoach, coachAvailability}) {
             <BookingSummary
               selectedBlocks={selectedBlocks}
               onClear={handleClearAll}
+              onRemoveSession={handleRemoveSession}
             />
           )}
 
