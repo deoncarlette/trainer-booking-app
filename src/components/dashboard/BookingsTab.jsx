@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { format, parse, parseISO } from 'date-fns';
+import { format, parse, parseISO, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 import { dashboard, components } from '../../utils/classnames';
 
 export default function BookingsTab({ coach, bookings }) {
@@ -7,28 +7,49 @@ export default function BookingsTab({ coach, bookings }) {
   const hourlyRate = coach.price || coach.hourlyRate || 0;
 
   const filteredBookings = bookings.filter(booking => {
-    if (filter === 'today') {
-      const today = new Date().toLocaleDateString('en-CA'); // en-CA gives YYYY-MM-DD format
-      return booking.date === today;
-    }
-    if (filter === 'week') {
-      const today = new Date();
-      const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      const weekFromNow = new Date(startOfToday.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const today = new Date();
 
-      // Convert booking.date string to a Date object for comparison
-      const bookingDate = new Date(`${booking.date}T23:59:59`);
+    if (filter === 'today') {
+      const todayString = today.toLocaleDateString('en-CA'); // en-CA gives YYYY-MM-DD format
+      return booking.date === todayString;
+    }
+
+    if (filter === 'week') {
+      // Get Sunday-Saturday week
+      const weekStart = startOfWeek(today, { weekStartsOn: 0 }); // 0 = Sunday
+      const weekEnd = endOfWeek(today, { weekStartsOn: 0 });
+
+      const bookingDate = new Date(`${booking.date}T12:00:00`);
 
       console.log('Week filter:', {
-        startOfToday,
-        weekFromNow,
+        weekStart,
+        weekEnd,
         bookingDateString: booking.date,
         bookingDate,
-        isInRange: bookingDate >= startOfToday && bookingDate <= weekFromNow
+        isInRange: bookingDate >= weekStart && bookingDate <= weekEnd
       });
 
-      return bookingDate >= startOfToday && bookingDate <= weekFromNow;
+      return bookingDate >= weekStart && bookingDate <= weekEnd;
     }
+
+    if (filter === 'month') {
+      // Get current calendar month
+      const monthStart = startOfMonth(today);
+      const monthEnd = endOfMonth(today);
+
+      const bookingDate = new Date(`${booking.date}T12:00:00`);
+
+      console.log('Month filter:', {
+        monthStart,
+        monthEnd,
+        bookingDateString: booking.date,
+        bookingDate,
+        isInRange: bookingDate >= monthStart && bookingDate <= monthEnd
+      });
+
+      return bookingDate >= monthStart && bookingDate <= monthEnd;
+    }
+
     return true; // 'all'
   });
 
@@ -155,7 +176,8 @@ export default function BookingsTab({ coach, bookings }) {
   const filterButtons = [
     { id: 'all', label: 'All' },
     { id: 'today', label: 'Today' },
-    { id: 'week', label: 'Week' }
+    { id: 'week', label: 'This Week' },
+    { id: 'month', label: 'This Month' }
   ];
 
   return (
