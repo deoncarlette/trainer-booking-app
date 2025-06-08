@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Edit3, X } from 'lucide-react';
 import { dashboard, components } from '../../utils/classnames';
+import ProfilePhotoUploader from "../ProfilePhotoUploader";
 
 export default function ProfileTab({ coach, editingProfile, setEditingProfile, onProfileUpdate, loading }) {
   const [formData, setFormData] = useState({
@@ -64,17 +65,20 @@ export default function ProfileTab({ coach, editingProfile, setEditingProfile, o
         <div className="md:col-span-1">
           <div className="text-center">
             <img
-              src={coach.image || coach.avatar || '/default-avatar.png'}
+              src={coach.photoURL || coach.image || coach.avatar || '/default-avatar.png'}
               alt={coach.name}
-              className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
+              className="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-gray-200 dark:border-gray-600"
               onError={(e) => {
                 e.target.src = '/default-avatar.png';
               }}
             />
             {editingProfile && (
-              <button className={dashboard.form.secondaryButton}>
-                Change Photo
-              </button>
+              <div className="mt-4">
+                <ProfilePhotoUploader
+                  coachId={coach.id}
+                  currentPhoto={coach.photoURL || coach.image || coach.avatar}
+                />
+              </div>
             )}
           </div>
         </div>

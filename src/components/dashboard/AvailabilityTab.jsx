@@ -41,11 +41,6 @@ const TimePicker = ({ value, onChange, className }) => {
     return <option key={h} value={h}>{h}</option>;
   });
 
-  // Generate minute options (00, 15, 30, 45)
-  // const minuteOptions = ['00', '15', '30', '45'].map(m => (
-  //   <option key={m} value={m}>{m}</option>
-  // ));
-
   // For every 5 minutes (0 to 55)
   const minuteOptions = Array.from({ length: 12 }, (_, i) => {
     const m = (i * 5).toString().padStart(2, '0');
@@ -87,12 +82,12 @@ const TimePicker = ({ value, onChange, className }) => {
 const SessionPicker = ({ value, onChange, className }) => {
   const [minutes, setMinutes] = useState(value || "30");
 
-  // Generate options from 15 to 240 minutes in 5-minute increments
+  // Generate options from 10 to 240 minutes in 10-minute increments
   const minuteOptions = Array.from({ length: 24 }, (_, i) => {
     const mins = 10 + (i * 10); // 10, 20, 30, 40... 240
     return (
       <option key={mins} value={mins}>
-        {mins < 10 ? `0${mins}` : mins}
+        {mins}
       </option>
     );
   });
@@ -158,7 +153,12 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
       ...prev,
       [day]: {
         ...prev[day],
-        [nextKey]: { start: "09:00", end: "17:00" }
+        [nextKey]: {
+          start: "09:00",
+          end: "17:00",
+          minSessionLength: "30",
+          maxSessionLength: "120"
+        }
       }
     }));
   };
@@ -186,9 +186,23 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
       if (day === 'sunday') {
         defaultAvailability[day] = {};
       } else if (day === 'saturday') {
-        defaultAvailability[day] = { 0: { start: "10:00", end: "15:00" } };
+        defaultAvailability[day] = {
+          0: {
+            start: "10:00",
+            end: "15:00",
+            minSessionLength: "30",
+            maxSessionLength: "120"
+          }
+        };
       } else {
-        defaultAvailability[day] = { 0: { start: "17:00", end: "21:00" } };
+        defaultAvailability[day] = {
+          0: {
+            start: "17:00",
+            end: "21:00",
+            minSessionLength: "30",
+            maxSessionLength: "120"
+          }
+        };
       }
     });
     setWeeklyAvailability(defaultAvailability);
@@ -215,22 +229,6 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
             <div className="space-y-2 sm:space-y-3">
               {Object.entries(weeklyAvailability[day] || {}).map(([slotKey, slot]) => (
                 <div key={slotKey} className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-                  {/* Mobile: stack vertically, Desktop: side by side */}
-                  {/*<div className="flex items-center space-x-2 sm:space-x-3 flex-1">*/}
-                  {/*  <input*/}
-                  {/*    type="time"*/}
-                  {/*    value={slot.start || "09:00"}*/}
-                  {/*    onChange={(e) => updateAvailability(day, slotKey, 'start', e.target.value)}*/}
-                  {/*    className={`${dashboard.form.input} text-sm sm:text-base min-h-[44px]`}*/}
-                  {/*  />*/}
-                  {/*  <span className="dark:text-white text-sm sm:text-base px-1 sm:px-0">to</span>*/}
-                  {/*  <input*/}
-                  {/*    type="time"*/}
-                  {/*    value={slot.end || "17:00"}*/}
-                  {/*    onChange={(e) => updateAvailability(day, slotKey, 'end', e.target.value)}*/}
-                  {/*    className={`${dashboard.form.input} text-sm sm:text-base min-h-[44px]`}*/}
-                  {/*  />*/}
-                  {/*</div>*/}
                   <div className="flex items-center space-x-2 sm:space-x-3 flex-1">
                     <TimePicker
                       value={slot.start || "09:00"}
@@ -264,8 +262,6 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
                         className={dashboard.form.timePicker}
                       />
                     </div>
-
-
                   </div>
 
                   <button

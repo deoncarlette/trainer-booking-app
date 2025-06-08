@@ -1,5 +1,6 @@
 import React from 'react';
 import { Calendar, Users, DollarSign, TrendingUp } from 'lucide-react';
+import { format, parse, parseISO } from 'date-fns';
 import { dashboard } from '../../utils/classnames';
 
 export default function OverviewTab({ coach, stats }) {
@@ -11,26 +12,74 @@ export default function OverviewTab({ coach, stats }) {
     return `${firstName || ''} ${lastName || ''}`.trim();
   };
 
+  // Enhanced time formatting to handle both ISO datetime strings and time-only strings
+  const formatTime = (timeString) => {
+    if (!timeString) return 'TBA';
+
+    try {
+      // Check if it's an ISO datetime string
+      if (timeString.includes('T')) {
+        const date = parseISO(timeString);
+        return format(date, "h:mm a");
+      }
+
+      // Handle time-only format (HH:mm)
+      return format(parse(timeString, "HH:mm", new Date()), "h:mm a");
+    } catch (error) {
+      console.warn('Failed to format time:', timeString, error);
+      return timeString; // fallback to original if parsing fails
+    }
+  };
+
   const formatTimeSlot = (timeSlot) => {
     if (!timeSlot) return 'TBA';
-    const start = timeSlot.start || '';
-    const end = timeSlot.end || '';
+
+    const start = timeSlot.start ? formatTime(timeSlot.start) : '';
+    const end = timeSlot.end ? formatTime(timeSlot.end) : '';
+
     if (start && end) {
       return `${start} - ${end}`;
     }
     return start || end || 'TBA';
   };
 
+  // Enhanced duration calculation to handle new duration field and ISO datetime strings
   const calculateDuration = (timeSlot) => {
-    if (!timeSlot?.start || !timeSlot?.end) return 60;
+    if (!timeSlot) return 60;
 
-    const [startHour, startMin] = timeSlot.start.split(':').map(Number);
-    const [endHour, endMin] = timeSlot.end.split(':').map(Number);
+    // If duration is explicitly provided, use it
+    if (timeSlot.duration) {
+      return parseInt(timeSlot.duration);
+    }
 
-    const startMinutes = startHour * 60 + startMin;
-    const endMinutes = endHour * 60 + endMin;
+    // Calculate duration from start and end times
+    if (!timeSlot.start || !timeSlot.end) return 60;
 
-    return Math.max(endMinutes - startMinutes, 0);
+    try {
+      let startDate, endDate;
+
+      // Handle ISO datetime strings
+      if (timeSlot.start.includes('T') && timeSlot.end.includes('T')) {
+        startDate = parseISO(timeSlot.start);
+        endDate = parseISO(timeSlot.end);
+
+        // Calculate difference in minutes for ISO datetime
+        const diffMs = endDate - startDate;
+        return Math.max(Math.round(diffMs / (1000 * 60)), 0);
+      } else {
+        // Handle time-only format
+        const [startHour, startMin] = timeSlot.start.split(':').map(Number);
+        const [endHour, endMin] = timeSlot.end.split(':').map(Number);
+
+        const startMinutes = startHour * 60 + startMin;
+        const endMinutes = endHour * 60 + endMin;
+
+        return Math.max(endMinutes - startMinutes, 0);
+      }
+    } catch (error) {
+      console.warn('Failed to calculate duration:', timeSlot, error);
+      return 60; // fallback duration
+    }
   };
 
   const statsData = [

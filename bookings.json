@@ -10,8 +10,61 @@
         "lastName": "Jordan",
         "date": "2025-06-17",
         "timeSlot": {
-          "start": "16:00",
-          "end": "17:00"
+          "start": "2025-06-17T16:00:00-05:00",
+          "end": "2025-06-17T17:00:00-05:00",
+          "duration": "60"
+        },
+        "createdAt": "2025-06-01T12:00:00Z"
+      },
+      "2": {
+        "bookingId": "booking_2",
+        "clientId": "uid_client_123",
+        "firstName": "Anthony",
+        "lastName": "Jordan",
+        "date": "2025-06-07",
+        "timeSlot": {
+          "start": "2025-06-07T16:00:00-05:00",
+          "end": "2025-06-07T17:00:00-05:00",
+          "duration": "60"
+        },
+        "createdAt": "2025-06-01T12:00:00Z"
+      },
+      "3": {
+        "bookingId": "booking_3",
+        "clientId": "uid_client_123",
+        "firstName": "Anthony",
+        "lastName": "Jordan",
+        "date": "2025-06-08",
+        "timeSlot": {
+          "start": "2025-06-08T16:00:00-05:00",
+          "end": "2025-06-08T17:00:00-05:00",
+          "duration": "60"
+        },
+        "createdAt": "2025-06-01T12:00:00Z"
+      },
+      "4": {
+        "bookingId": "booking_4",
+        "clientId": "uid_client_123",
+        "firstName": "Anthony",
+        "lastName": "Jordan",
+        "date": "2025-06-12",
+        "timeSlot": {
+          "start": "2025-06-12T16:00:00-05:00",
+          "end": "2025-06-12T17:00:00-05:00",
+          "duration": "60"
+        },
+        "createdAt": "2025-06-01T12:00:00Z"
+      },
+      "5": {
+        "bookingId": "booking_5",
+        "clientId": "uid_client_1234",
+        "firstName": "Nicole",
+        "lastName": "Freeman",
+        "date": "2025-06-07",
+        "timeSlot": {
+          "start": "2025-06-07T17:00:00-05:00",
+          "end": "2025-06-07T18:00:00-05:00",
+          "duration": "60"
         },
         "createdAt": "2025-06-01T12:00:00Z"
       }
@@ -28,8 +81,9 @@
         "lastName": "Jordan",
         "date": "2025-06-17",
         "timeSlot": {
-          "start": "16:00",
-          "end": "17:00"
+          "start": "2025-06-17T16:00:00-05:00",
+          "end": "2025-06-17T17:00:00-05:00",
+          "duration": "60"
         },
         "createdAt": "2025-06-01T12:00:00Z"
       }
@@ -46,8 +100,9 @@
         "lastName": "Jordan",
         "date": "2025-06-17",
         "timeSlot": {
-          "start": "16:00",
-          "end": "17:00"
+          "start": "2025-06-17T16:00:00-05:00",
+          "end": "2025-06-17T17:00:00-05:00",
+          "duration": "60"
         },
         "createdAt": "2025-06-01T12:00:00Z"
       }

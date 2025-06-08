@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {format, parse} from 'date-fns';
+import { format, parse, parseISO } from 'date-fns';
 import { dashboard, components } from '../../utils/classnames';
 
 export default function BookingsTab({ coach, bookings }) {
@@ -8,17 +8,56 @@ export default function BookingsTab({ coach, bookings }) {
 
   const filteredBookings = bookings.filter(booking => {
     if (filter === 'today') {
-      const today = new Date().toISOString().split('T')[0];
+      const today = new Date().toLocaleDateString('en-CA'); // en-CA gives YYYY-MM-DD format
       return booking.date === today;
     }
     if (filter === 'week') {
       const today = new Date();
-      const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-      const bookingDate = new Date(booking.date);
-      return bookingDate >= today && bookingDate <= weekFromNow;
+      const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const weekFromNow = new Date(startOfToday.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+      // Convert booking.date string to a Date object for comparison
+      const bookingDate = new Date(`${booking.date}T23:59:59`);
+
+      console.log('Week filter:', {
+        startOfToday,
+        weekFromNow,
+        bookingDateString: booking.date,
+        bookingDate,
+        isInRange: bookingDate >= startOfToday && bookingDate <= weekFromNow
+      });
+
+      return bookingDate >= startOfToday && bookingDate <= weekFromNow;
     }
     return true; // 'all'
   });
+
+  console.log("filteredBookings", filteredBookings)
+
+  // Enhanced sorting to handle both ISO datetime strings and time-only strings
+  const sortedBookings = filteredBookings.sort((a, b) => {
+    const getDateTime = (booking) => {
+      const timeSlot = booking.timeSlot;
+      if (!timeSlot) return new Date(`${booking.date}T00:00:00`);
+
+      // Check if start time is ISO datetime string
+      if (timeSlot.start && timeSlot.start.includes('T')) {
+        try {
+          return parseISO(timeSlot.start);
+        } catch (error) {
+          console.warn('Failed to parse ISO datetime:', timeSlot.start);
+        }
+      }
+
+      // Fallback to time-only format
+      const timeString = timeSlot.start || booking.time || '00:00';
+      return new Date(`${booking.date}T${timeString}`);
+    };
+
+    return getDateTime(a) - getDateTime(b); // Ascending order (earliest first)
+  });
+
+  console.log("sortedBookings", sortedBookings)
 
   const getInitials = (firstName, lastName) => {
     const first = firstName?.charAt(0)?.toUpperCase() || '';
@@ -31,30 +70,86 @@ export default function BookingsTab({ coach, bookings }) {
     return `${firstName || ''} ${lastName || ''}`.trim();
   };
 
-  const formatTime = (time) => {
-    return format(parse(time, "HH:mm", new Date()), "h:mm a")
-  }
+  // Enhanced time formatting to handle both ISO datetime strings and time-only strings
+  const formatTime = (timeString) => {
+    if (!timeString) return 'TBA';
+
+    try {
+      // Check if it's an ISO datetime string
+      if (timeString.includes('T')) {
+        const date = parseISO(timeString);
+        return format(date, "h:mm a");
+      }
+
+      // Handle time-only format (HH:mm)
+      return format(parse(timeString, "HH:mm", new Date()), "h:mm a");
+    } catch (error) {
+      console.warn('Failed to format time:', timeString, error);
+      return timeString; // fallback to original if parsing fails
+    }
+  };
 
   const formatTimeSlot = (timeSlot) => {
     if (!timeSlot) return 'TBA';
+
     const start = timeSlot.start ? formatTime(timeSlot.start) : '';
     const end = timeSlot.end ? formatTime(timeSlot.end) : '';
+
     if (start && end) {
       return `${start} - ${end}`;
     }
     return start || end || 'TBA';
   };
 
+  // Enhanced duration calculation to handle new duration field and ISO datetime strings
   const calculateDuration = (timeSlot) => {
-    if (!timeSlot?.start || !timeSlot?.end) return 60;
+    if (!timeSlot) return 60;
 
-    const [startHour, startMin] = timeSlot.start.split(':').map(Number);
-    const [endHour, endMin] = timeSlot.end.split(':').map(Number);
+    // If duration is explicitly provided, use it
+    if (timeSlot.duration) {
+      return parseInt(timeSlot.duration);
+    }
 
-    const startMinutes = startHour * 60 + startMin;
-    const endMinutes = endHour * 60 + endMin;
+    // Calculate duration from start and end times
+    if (!timeSlot.start || !timeSlot.end) return 60;
 
-    return Math.max(endMinutes - startMinutes, 0);
+    try {
+      let startDate, endDate;
+
+      // Handle ISO datetime strings
+      if (timeSlot.start.includes('T') && timeSlot.end.includes('T')) {
+        startDate = parseISO(timeSlot.start);
+        endDate = parseISO(timeSlot.end);
+      } else {
+        // Handle time-only format
+        const [startHour, startMin] = timeSlot.start.split(':').map(Number);
+        const [endHour, endMin] = timeSlot.end.split(':').map(Number);
+
+        const startMinutes = startHour * 60 + startMin;
+        const endMinutes = endHour * 60 + endMin;
+
+        return Math.max(endMinutes - startMinutes, 0);
+      }
+
+      // Calculate difference in minutes for ISO datetime
+      const diffMs = endDate - startDate;
+      return Math.max(Math.round(diffMs / (1000 * 60)), 0);
+    } catch (error) {
+      console.warn('Failed to calculate duration:', timeSlot, error);
+      return 60; // fallback duration
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'TBA';
+    try {
+      // Use consistent date parsing to avoid timezone issues
+      const date = new Date(`${dateString}T12:00:00`);// Use noon to avoid timezone edge cases
+      console.log("Formatted date:", date, dateString)
+      return format(date, 'MMM d, yyyy');
+    } catch (error) {
+      return dateString; // fallback to original
+    }
   };
 
   const filterButtons = [
@@ -84,13 +179,13 @@ export default function BookingsTab({ coach, bookings }) {
         </div>
       </div>
 
-      {filteredBookings.length === 0 ? (
+      {sortedBookings.length === 0 ? (
         <p className={dashboard.section.emptyState}>
           No bookings found for the selected filter.
         </p>
       ) : (
         <div className={dashboard.section.content}>
-          {filteredBookings.map(booking => (
+          {sortedBookings.map(booking => (
             <div key={booking.id} className="border dark:border-gray-700 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-3">
@@ -110,9 +205,7 @@ export default function BookingsTab({ coach, bookings }) {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div>
                   <p className="text-gray-600 dark:text-gray-400">Date</p>
-                  <p className="dark:text-white">
-                    {booking.date ? format(new Date(booking.date), 'MMM d, yyyy') : 'TBA'}
-                  </p>
+                  <p className="dark:text-white">{formatDate(booking.date)}</p>
                 </div>
                 <div>
                   <p className="text-gray-600 dark:text-gray-400">Time</p>
