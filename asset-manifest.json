@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/trainer-booking-app/static/css/main.bfd91049.css",
-    "main.js": "/trainer-booking-app/static/js/main.961d08c1.js",
+    "main.css": "/trainer-booking-app/static/css/main.e8ec18ed.css",
+    "main.js": "/trainer-booking-app/static/js/main.59d710d7.js",
     "index.html": "/trainer-booking-app/index.html",
-    "main.bfd91049.css.map": "/trainer-booking-app/static/css/main.bfd91049.css.map",
-    "main.961d08c1.js.map": "/trainer-booking-app/static/js/main.961d08c1.js.map"
+    "main.e8ec18ed.css.map": "/trainer-booking-app/static/css/main.e8ec18ed.css.map",
+    "main.59d710d7.js.map": "/trainer-booking-app/static/js/main.59d710d7.js.map"
   },
   "entrypoints": [
-    "static/css/main.bfd91049.css",
-    "static/js/main.961d08c1.js"
+    "static/css/main.e8ec18ed.css",
+    "static/js/main.59d710d7.js"
   ]
 }
