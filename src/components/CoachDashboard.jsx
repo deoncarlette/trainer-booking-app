@@ -5,7 +5,6 @@ import { format } from "date-fns";
 import { updateCoachProfile, updateCoachAvailability, updateCoachPricing } from '../utils/firebaseService';
 import { dashboard } from '../utils/classnames';
 
-
 // Individual Components
 import DashboardHeader from './dashboard/DashboardHeader';
 import DashboardNavigation from './dashboard/DashboardNavigation';

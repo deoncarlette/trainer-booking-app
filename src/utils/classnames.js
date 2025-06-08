@@ -564,46 +564,47 @@ export const dashboard = {
     ),
 
     content: clsx(
-      "flex flex-col sm:flex-row sm:justify-between sm:items-center",
-      "py-4 sm:py-6 space-y-4 sm:space-y-0"
+      "flex justify-between items-center", // Always horizontal layout
+      "py-4 sm:py-6"
     ),
 
     left: clsx(
-      "flex items-center space-x-3 sm:space-x-4"
+      "flex items-center space-x-3 sm:space-x-4 min-w-0 flex-1"
     ),
 
     avatar: clsx(
-      "w-8 h-8 sm:w-10 sm:h-10",
+      "w-10 h-10 sm:w-12 sm:h-12", // Slightly larger for better visibility
       base.rounded.full,
-      "object-cover"
+      "object-cover flex-shrink-0"
     ),
 
     title: clsx(
-      "text-xl sm:text-2xl font-bold",
+      "text-lg sm:text-2xl font-bold truncate", // Add truncate for long text
       colors.light.text,
       colors.dark.text
     ),
 
     subtitle: clsx(
-      "text-sm sm:text-base",
+      "text-sm sm:text-base truncate", // Add truncate for long text
       colors.light.textMuted,
       colors.dark.textMuted
     ),
 
     right: clsx(
-      "flex items-center justify-end space-x-2 sm:space-x-4"
+      "flex items-center space-x-2 sm:space-x-4 flex-shrink-0" // Prevent shrinking
     ),
 
     iconButton: clsx(
-      "p-2",
+      "p-2 rounded-full", // Make it more touch-friendly
       colors.light.textMuted,
       colors.dark.textMuted,
-      "hover:text-gray-900 dark:hover:text-white"
+      "hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700",
+      "transition-colors"
     ),
 
     primaryButton: clsx(
       components.button.secondary,
-      "text-sm px-3 py-2" // Smaller on mobile
+      "text-sm px-3 py-2 whitespace-nowrap" // Prevent text wrapping
     ),
   },
 
