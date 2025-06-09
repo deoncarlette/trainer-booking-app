@@ -1,7 +1,9 @@
 // Helper function to check if a slot is in default state (12am-12am)
 const isDefaultSlot = (slot) => {
   return slot.start === "00:00" && slot.end === "00:00";
-};import React, { useState, useEffect } from 'react';
+};
+
+import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Save } from 'lucide-react';
 import { dashboard } from '../../utils/classnames';
 
@@ -54,7 +56,7 @@ const TimePicker = ({ value, onChange, className, isDefaultSlot }) => {
   const defaultSlotStyle = isDefaultSlot ? 'border-dashed border-2 border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20' : '';
 
   return (
-    <div className={`inline-flex items-center border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 ${className} ${defaultSlotStyle}`}>
+    <div className={`inline-flex items-center border border-gray-300 dark:border-stone-600 rounded-md shadow-sm bg-white dark:bg-stone-900 ${defaultSlotStyle} ${className}`}>
       <select
         value={hour}
         onChange={(e) => handleTimeChange(e.target.value, minute, period)}
@@ -76,7 +78,7 @@ const TimePicker = ({ value, onChange, className, isDefaultSlot }) => {
       <select
         value={period}
         onChange={(e) => handleTimeChange(hour, minute, e.target.value)}
-        className="px-2 py-2 outline-none appearance-none bg-transparent dark:text-white text-sm sm:text-base min-h-[44px] border-l border-gray-200 dark:border-gray-600 ml-1"
+        className="px-2 py-2 outline-none appearance-none bg-transparent dark:text-white text-sm sm:text-base min-h-[44px] border-l border-gray-200 dark:border-stone-600 ml-1"
       >
         <option value="AM">AM</option>
         <option value="PM">PM</option>
@@ -104,16 +106,16 @@ const SessionPicker = ({ value, onChange, className }) => {
   };
 
   return (
-    <div className={`inline-flex items-center ${className}`}>
+    <div className="inline-flex items-center border border-gray-300 dark:border-stone-600 rounded-md shadow-sm bg-white dark:bg-stone-900">
       <select
         value={minutes}
         onChange={(e) => handleChange(e.target.value)}
-        className="px-1.5 py-2.5 outline-none appearance-none bg-transparent dark:text-white text-md text-center"
-        style={{width: '50px'}}
+        className="px-2 py-2 outline-none appearance-none bg-transparent dark:text-white text-sm sm:text-base text-center min-h-[44px]"
+        style={{width: '66px'}}
       >
         {minuteOptions}
       </select>
-      <span className="px-1 dark:text-white text-md">mins</span>
+      <span className="px-2 py-2 dark:text-white text-sm sm:text-base border-l border-gray-200 dark:border-stone-600">mins</span>
     </div>
   );
 };
@@ -213,9 +215,6 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
         [day]: newDaySlots
       };
     });
-  };
-  const isDefaultSlot = (slot) => {
-    return slot.start === "00:00" && slot.end === "00:00";
   };
 
   // Function to sort slots by time without merging (put default slots at end)
@@ -364,7 +363,7 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
 
       <div className={dashboard.section.content}>
         {days.map(day => (
-          <div key={day} className="border dark:border-gray-700 rounded-lg p-3 sm:p-4">
+          <div key={day} className="border dark:border-stone-700 rounded-lg p-3 sm:p-4 mb-4 bg-gray-50 dark:bg-black">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 space-y-2 sm:space-y-0">
               <h4 className="font-medium capitalize dark:text-white">{day}</h4>
               <button
@@ -379,16 +378,16 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
             <div className="space-y-2 sm:space-y-3">
               {hasOverlappingSlots(weeklyAvailability[day]) && (
                 <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-yellow-600 dark:text-yellow-400">⚠️</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                    <div className="flex items-start space-x-2">
+                      <span className="text-yellow-600 dark:text-yellow-400 mt-0.5">⚠️</span>
                       <span className="text-sm text-yellow-800 dark:text-yellow-300">
                         You have overlapping time slots. Would you like to merge them to avoid conflicts?
                       </span>
                     </div>
                     <button
                       onClick={() => mergeOverlappingSlots(day)}
-                      className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white text-xs rounded transition-colors ml-3 whitespace-nowrap"
+                      className="px-3 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm rounded transition-colors w-full sm:w-auto sm:ml-3 whitespace-nowrap"
                     >
                       Merge Slots
                     </button>
@@ -402,56 +401,122 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
                 </div>
               )}
 
-              {Object.entries(sortSlots(weeklyAvailability[day] || {})).map(([slotKey, slot]) => (
-                <div key={slotKey} className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-                  <div className="flex items-center space-x-2 sm:space-x-3 flex-1">
-                    <TimePicker
-                      value={slot.start || "00:00"}
-                      onChange={(value) => updateAvailability(day, slotKey, 'start', value)}
-                      className={dashboard.form.timePicker}
-                      isDefaultSlot={isDefaultSlot(slot)}
-                    />
-                    <span className="dark:text-white text-sm sm:text-base px-1 sm:px-0">to</span>
-                    <TimePicker
-                      value={slot.end || "00:00"}
-                      onChange={(value) => updateAvailability(day, slotKey, 'end', value)}
-                      className={dashboard.form.timePicker}
-                      isDefaultSlot={isDefaultSlot(slot)}
-                    />
+              {Object.entries(sortSlots(weeklyAvailability[day] || {})).map(([slotKey, slot], index) => (
+                <div key={slotKey}>
+                  {/* Separator for stacked slots (not first slot) - shows when desktop layout wraps */}
+                  {index > 0 && (
+                    <div className="border-t border-gray-300 dark:border-stone-600 mx-3 mb-3"></div>
+                  )}
 
-                    <span className="p-4"></span>
+                  <div className="rounded-lg p-3">
+                    {/* Mobile Layout - Cleaner and more compact */}
+                    <div className="block sm:hidden space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <span className="dark:text-white text-sm">Start:</span>
+                          <TimePicker
+                            value={slot.start || "00:00"}
+                            onChange={(value) => updateAvailability(day, slotKey, 'start', value)}
+                            className="flex-shrink-0"
+                            isDefaultSlot={isDefaultSlot(slot)}
+                          />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="dark:text-white text-sm">Stop:</span>
+                          <TimePicker
+                            value={slot.end || "00:00"}
+                            onChange={(value) => updateAvailability(day, slotKey, 'end', value)}
+                            className="flex-shrink-0"
+                            isDefaultSlot={isDefaultSlot(slot)}
+                          />
+                        </div>
+                      </div>
 
-                    {/* Session Length Dropdown */}
-                    <div className="flex items-center space-x-2 ml-4">
-                      <span className="dark:text-white text-sm whitespace-nowrap">Session:</span>
+                      <div className="flex items-center">
+                        <div className="flex items-center space-x-2">
+                          <span className="dark:text-white text-sm">Min:</span>
+                          <SessionPicker
+                            value={slot.minSessionLength || "30"}
+                            onChange={(value) => updateAvailability(day, slotKey, 'minSessionLength', value)}
+                          />
+                        </div>
+                        <div className="flex items-center space-x-2 ml-auto">
+                          <span className="dark:text-white text-sm">Max:</span>
+                          <SessionPicker
+                            value={slot.maxSessionLength || "120"}
+                            onChange={(value) => updateAvailability(day, slotKey, 'maxSessionLength', value)}
+                          />
+                        </div>
+                      </div>
 
-                      <SessionPicker
-                        value={slot.minSessionLength || "30"}
-                        onChange={(value) => updateAvailability(day, slotKey, 'minSessionLength', value)}
-                        className={dashboard.form.timePicker}
-                      />
+                      <div className="flex justify-end pt-1">
+                        <button
+                          onClick={() => removeSlot(day, slotKey)}
+                          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900 rounded transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4"/>
+                        </button>
+                      </div>
+                    </div>
 
-                      <span className="dark:text-white text-sm">to</span>
+                    {/* Desktop Layout - Better spacing and wrapping */}
+                    <div className="hidden sm:flex sm:items-start sm:justify-between sm:gap-8">
+                      <div className="flex flex-wrap gap-8 lg:gap-12 flex-1">
+                        {/* Time Range Group */}
+                        <div className="flex flex-col space-y-2 flex-shrink-0 min-w-0">
+                          {index === 0 && (
+                            <span className="dark:text-white text-sm font-medium">Time Range</span>
+                          )}
+                          <div className="flex items-center space-x-2 flex-wrap gap-y-2">
+                            <span className="dark:text-white text-sm whitespace-nowrap">Start:</span>
+                            <TimePicker
+                              value={slot.start || "00:00"}
+                              onChange={(value) => updateAvailability(day, slotKey, 'start', value)}
+                              isDefaultSlot={isDefaultSlot(slot)}
+                            />
+                            <span className="dark:text-white text-sm whitespace-nowrap">Stop:</span>
+                            <TimePicker
+                              value={slot.end || "00:00"}
+                              onChange={(value) => updateAvailability(day, slotKey, 'end', value)}
+                              isDefaultSlot={isDefaultSlot(slot)}
+                            />
+                          </div>
+                        </div>
 
-                      <SessionPicker
-                        value={slot.maxSessionLength || "120"}
-                        onChange={(value) => updateAvailability(day, slotKey, 'maxSessionLength', value)}
-                        className={dashboard.form.timePicker}
-                      />
+                        {/* Session Duration Group */}
+                        <div className="flex flex-col space-y-2 flex-shrink-0 min-w-0">
+                          {index === 0 && (
+                            <span className="dark:text-white text-sm font-medium">Session Duration</span>
+                          )}
+                          <div className="flex items-center space-x-2 flex-wrap gap-y-2">
+                            <span className="dark:text-white text-sm whitespace-nowrap">Min:</span>
+                            <SessionPicker
+                              value={slot.minSessionLength || "30"}
+                              onChange={(value) => updateAvailability(day, slotKey, 'minSessionLength', value)}
+                            />
+                            <span className="dark:text-white text-sm whitespace-nowrap">Max:</span>
+                            <SessionPicker
+                              value={slot.maxSessionLength || "120"}
+                              onChange={(value) => updateAvailability(day, slotKey, 'maxSessionLength', value)}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Delete Button - Always on right, aligned properly */}
+                      <button
+                        onClick={() => removeSlot(day, slotKey)}
+                        className={`p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900 rounded transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center flex-shrink-0 ${index === 0 ? 'mt-6' : ''}`}
+                      >
+                        <Trash2 className="w-4 h-4"/>
+                      </button>
                     </div>
                   </div>
-
-                  <button
-                    onClick={() => removeSlot(day, slotKey)}
-                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900 rounded transition-colors self-center sm:self-auto min-h-[44px] min-w-[44px] flex items-center justify-center"
-                  >
-                    <Trash2 className="w-4 h-4"/>
-                  </button>
                 </div>
               ))}
 
               {Object.keys(sortSlots(weeklyAvailability[day] || {})).length === 0 && (
-                <p className="text-gray-500 dark:text-gray-400 italic text-sm">No availability set</p>
+                <p className="text-gray-500 dark:text-gray-400 italic text-sm text-center py-4">No availability set</p>
               )}
             </div>
           </div>
@@ -468,21 +533,21 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
         </p>
       </div>
 
-      <div className={`${dashboard.form.buttonGroup} flex-col sm:flex-row space-y-2 sm:space-y-0`}>
+      <div className={`${dashboard.form.buttonGroup} flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-3 mt-6`}>
         <button
           onClick={saveAvailability}
           disabled={loading}
-          className={`${dashboard.form.primaryButton} flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] w-full sm:w-auto ${
+          className={`${dashboard.form.primaryButton} flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] w-full sm:w-auto text-base ${
             loading ? 'cursor-wait' : ''
           }`}
         >
-          <Save className="w-4 h-4"/>
+          <Save className="w-5 h-5"/>
           <span>{loading ? 'Saving...' : 'Save Changes'}</span>
         </button>
         <button
           onClick={resetToDefault}
           disabled={loading}
-          className={`${dashboard.form.secondaryButton} disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] w-full sm:w-auto`}
+          className={`${dashboard.form.secondaryButton} disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] w-full sm:w-auto text-base`}
         >
           Reset to Default
         </button>
