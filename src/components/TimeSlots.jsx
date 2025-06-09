@@ -187,7 +187,7 @@ export default function TimeSlots({
           <select
             value={selectedStartTime}
             onChange={(e) => handleStartTimeChange(e.target.value)}
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-3 py-2 text-sm"
+            className="w-full bg-gray-100 dark:bg-stone-700 border border-gray-600 text-gray-800 dark:text-stone-100 rounded px-3 py-2 text-sm"
           >
             <option value="">Select start time...</option>
             {availableStartTimes.map(({ time }) => (
@@ -207,7 +207,7 @@ export default function TimeSlots({
             <select
               value={selectedEndTime}
               onChange={(e) => setSelectedEndTime(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 text-white rounded px-3 py-2 text-sm"
+              className="w-full bg-gray-100 dark:bg-stone-700 border border-gray-600 text-gray-800 dark:text-stone-100 rounded px-3 py-2 text-sm"
             >
               <option value="">Select end time...</option>
               {validEndTimes.map(({ time, duration, label }) => (

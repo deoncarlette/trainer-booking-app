@@ -2,7 +2,20 @@ import React, { useState, useMemo } from 'react';
 import { useParams, Link } from "react-router-dom";
 import { Calendar, Clock, DollarSign, Users, Settings, Bell, TrendingUp } from 'lucide-react';
 import { format } from "date-fns";
-import { updateCoachProfile, updateCoachAvailability, updateCustomAvailability, updateUnavailableDates, updateCoachPricing } from '../utils/firebaseService';
+import {
+  updateCoachProfile,
+  updateCoachAvailability,
+  updateCustomAvailability,
+  updateUnavailableDates,
+  updateCoachPricing,
+  confirmBooking,
+  rejectBooking,
+  cancelBooking,
+  updateBooking,
+  addBooking
+} from '../utils/firebaseService';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 import { dashboard } from '../utils/classnames';
 
 // Individual Components
@@ -14,13 +27,13 @@ import AvailabilityTab from './dashboard/AvailabilityTab';
 import PricingTab from './dashboard/PricingTab';
 import ProfileTab from './dashboard/ProfileTab';
 
-export default function CoachesDashboard({ trainers = [], bookings = [], availability = []}) {
-  const { trainerId } = useParams()
-  console.log("paramId", trainerId)
-  const coachId= trainerId || "nique";
-  console.log("trainers", trainers)
+export default function CoachesDashboard({ trainers = [], bookings = [], availability = [], onDataReload }) {
+  const { trainerId } = useParams();
+  console.log("paramId", trainerId);
+  const coachId = trainerId || "nique";
+  console.log("trainers", trainers);
   console.log(trainers.map(t => t.id)); // Make sure "nique" is one of them
-  console.log("coachId", coachId)
+  console.log("coachId", coachId);
 
   const [activeTab, setActiveTab] = useState('overview');
   const [editingProfile, setEditingProfile] = useState(false);
@@ -45,7 +58,9 @@ export default function CoachesDashboard({ trainers = [], bookings = [], availab
     // Convert bookings map to array with keys as booking IDs
     return Object.entries(coachBookingData.bookings).map(([bookingId, bookingData]) => ({
       id: bookingId,
-      ...bookingData
+      ...bookingData,
+      // Normalize status - treat undefined as pending
+      status: bookingData.status || 'pending'
     }));
   }, [coachBookingData]);
   console.log("coachBookings", coachBookings);
@@ -54,7 +69,7 @@ export default function CoachesDashboard({ trainers = [], bookings = [], availab
   const coachAvailability = useMemo(() => {
     return availability.find(avail => avail.id === coachId) || {};
   }, [availability, coachId]);
-  console.log("coachAvailability", coachAvailability)
+  console.log("coachAvailability", coachAvailability);
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -113,13 +128,12 @@ export default function CoachesDashboard({ trainers = [], bookings = [], availab
 
     if (result.success) {
       setMessage('Profile updated successfully!');
-      // Optionally refresh data or update local state
     } else {
       setMessage(`Error: ${result.error}`);
     }
 
     setLoading(false);
-    setTimeout(() => setMessage(''), 3000); // Clear message after 3s
+    setTimeout(() => setMessage(''), 3000);
   };
 
   const handleAvailabilityUpdate = async (availabilityData) => {
@@ -176,7 +190,132 @@ export default function CoachesDashboard({ trainers = [], bookings = [], availab
 
     setLoading(false);
     setTimeout(() => setMessage(''), 3000);
-  }
+  };
+
+  const handleConfirmBooking = async (bookingId) => {
+    setLoading(true);
+    const result = await confirmBooking(coachId, bookingId);
+
+    if (result.success) {
+      setMessage('✅ Booking confirmed successfully!');
+    } else {
+      setMessage(`❌ Error: ${result.error}`);
+    }
+
+    setLoading(false);
+    setTimeout(() => setMessage(''), 3000);
+  };
+
+  const handleRejectBooking = async (bookingId, rejectionReason) => {
+    setLoading(true);
+    const result = await rejectBooking(coachId, bookingId, rejectionReason);
+
+    if (result.success) {
+      setMessage('✅ Booking request rejected.');
+    } else {
+      setMessage(`❌ Error: ${result.error}`);
+    }
+
+    setLoading(false);
+    setTimeout(() => setMessage(''), 3000);
+  };
+
+  const handleEditBooking = async (bookingId, updateData) => {
+    setLoading(true);
+    const result = await updateBooking(coachId, bookingId, updateData);
+
+    if (result.success) {
+      setMessage('✅ Booking updated successfully!');
+    } else {
+      setMessage(`❌ Error: ${result.error}`);
+    }
+
+    setLoading(false);
+    setTimeout(() => setMessage(''), 3000);
+  };
+
+  const handleCancelBooking = async (bookingId, cancellationReason) => {
+    setLoading(true);
+    const result = await cancelBooking(coachId, bookingId, cancellationReason);
+
+    if (result.success) {
+      setMessage('✅ Booking cancelled successfully.');
+    } else {
+      setMessage(`❌ Error: ${result.error}`);
+    }
+
+    setLoading(false);
+    setTimeout(() => setMessage(''), 3000);
+  };
+
+  const handleAddSession = async (sessionData) => {
+    setLoading(true);
+    const result = await addBooking(coachId, sessionData);
+
+    if (result.success) {
+      setMessage('✅ Session added successfully!');
+    } else {
+      setMessage(`❌ Error: ${result.error}`);
+    }
+
+    setLoading(false);
+    setTimeout(() => setMessage(''), 3000);
+  };
+
+  const handleUpdatePayment = async (bookingId, paymentData) => {
+    setLoading(true);
+
+    // Use more explicit payment update
+    const updateObject = {
+      [`bookings.${bookingId}.paymentInfo.status`]: paymentData.status,
+      [`bookings.${bookingId}.paymentInfo.totalAmount`]: paymentData.totalAmount,
+      [`bookings.${bookingId}.paymentInfo.amountPaid`]: paymentData.amountPaid,
+      [`bookings.${bookingId}.paymentInfo.amountDue`]: Math.max(paymentData.totalAmount - paymentData.amountPaid, 0),
+      [`bookings.${bookingId}.paymentInfo.lastUpdated`]: new Date().toISOString(),
+      [`bookings.${bookingId}.updatedAt`]: new Date().toISOString()
+    };
+
+    console.log('💳 Payment update data:', updateObject);
+
+    try {
+      const coachRef = doc(db, 'bookings', `coach_${coachId}`);
+      await updateDoc(coachRef, updateObject);
+      setMessage('✅ Payment updated successfully!');
+    } catch (error) {
+      console.error('Payment update error:', error);
+      setMessage(`❌ Error: ${error.message}`);
+    }
+
+    setLoading(false);
+    setTimeout(() => setMessage(''), 3000);
+  };
+
+  const handleForceReload = () => {
+    if (onDataReload) {
+      console.log('🔄 Forcing data reload...');
+      onDataReload();
+      // Note: activeTab state is preserved, so we stay on current tab
+    } else {
+      console.log('🔄 Fallback: Reloading page...');
+      // Store current tab before reload
+      sessionStorage.setItem('coachDashboardActiveTab', activeTab);
+      window.location.reload();
+    }
+  };
+
+  // Restore active tab after page reload (if using fallback)
+  React.useEffect(() => {
+    const savedTab = sessionStorage.getItem('coachDashboardActiveTab');
+    if (savedTab && tabs.find(tab => tab.id === savedTab)) {
+      setActiveTab(savedTab);
+      sessionStorage.removeItem('coachDashboardActiveTab');
+    }
+  }, []);
+
+  // Handle profile navigation from header
+  const handleProfileNavigation = () => {
+    setActiveTab('profile');
+  };
 
   const renderActiveTab = () => {
     const commonProps = {
@@ -184,12 +323,19 @@ export default function CoachesDashboard({ trainers = [], bookings = [], availab
       bookings: coachBookings,
       availability: coachAvailability,
       stats,
-      loading, // Pass loading state
+      loading,
       onProfileUpdate: handleProfileUpdate,
       onAvailabilityUpdate: handleAvailabilityUpdate,
       onCustomAvailabilityUpdate: handleCustomAvailabilityUpdate,
-      onUnavailableDatesUpdate: handleUnavailableUpdate, // ✅ Fixed prop name
+      onUnavailableDatesUpdate: handleUnavailableUpdate,
       onPricingUpdate: handlePricingUpdate,
+      onConfirmBooking: handleConfirmBooking,
+      onRejectBooking: handleRejectBooking,
+      onEditBooking: handleEditBooking,
+      onCancelBooking: handleCancelBooking,
+      onAddSession: handleAddSession,
+      onUpdatePayment: handleUpdatePayment,
+      onForceReload: handleForceReload
     };
 
     switch (activeTab) {
@@ -210,7 +356,7 @@ export default function CoachesDashboard({ trainers = [], bookings = [], availab
 
   return (
     <div className={dashboard.layout}>
-      <DashboardHeader coach={coach} />
+      <DashboardHeader coach={coach} onProfileClick={handleProfileNavigation} />
       {/* Show loading/success messages */}
       {message && (
         <div className={`fixed top-4 right-4 p-3 rounded-lg shadow-lg z-50 ${
