@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useParams, Link } from "react-router-dom";
 import { Calendar, Clock, DollarSign, Users, Settings, Bell, TrendingUp } from 'lucide-react';
 import { format } from "date-fns";
-import { updateCoachProfile, updateCoachAvailability, updateCoachPricing } from '../utils/firebaseService';
+import { updateCoachProfile, updateCoachAvailability, updateCustomAvailability, updateUnavailableDates, updateCoachPricing } from '../utils/firebaseService';
 import { dashboard } from '../utils/classnames';
 
 // Individual Components
@@ -136,6 +136,34 @@ export default function CoachesDashboard({ trainers = [], bookings = [], availab
     setTimeout(() => setMessage(''), 3000);
   };
 
+  const handleCustomAvailabilityUpdate = async (customData) => {
+    setLoading(true);
+    const result = await updateCustomAvailability(coachId, customData);
+
+    if (result.success) {
+      setMessage('Custom Availability updated successfully!');
+    } else {
+      setMessage(`Error: ${result.error}`);
+    }
+
+    setLoading(false);
+    setTimeout(() => setMessage(''), 3000);
+  };
+
+  const handleUnavailableUpdate = async (unavailablata) => {
+    setLoading(true);
+    const result = await updateUnavailableDates(coachId, unavailablata);
+
+    if (result.success) {
+      setMessage('Unavailable Dates updated successfully!');
+    } else {
+      setMessage(`Error: ${result.error}`);
+    }
+
+    setLoading(false);
+    setTimeout(() => setMessage(''), 3000);
+  };
+
   const handlePricingUpdate = async (pricingData) => {
     setLoading(true);
     const result = await updateCoachPricing(coachId, pricingData);
@@ -159,6 +187,8 @@ export default function CoachesDashboard({ trainers = [], bookings = [], availab
       loading, // Pass loading state
       onProfileUpdate: handleProfileUpdate,
       onAvailabilityUpdate: handleAvailabilityUpdate,
+      onCustomAvailabilityUpdate: handleCustomAvailabilityUpdate,
+      onUnavailableDatesUpdate: handleUnavailableUpdate, // ✅ Fixed prop name
       onPricingUpdate: handlePricingUpdate,
     };
 

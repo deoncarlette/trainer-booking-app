@@ -37,12 +37,12 @@ export default function TrainerCard({ trainer, onSelect }) {
           </div>
 
           {/* Availability badge */}
-          <div className={trainerCard.availabilityOuter}>
-            <div className={trainerCard.availabilityInner}>
-              <span className={trainerCard.availabilityBackground} />
-              <span className={trainerCard.availability}>{trainer.availability}</span>
-            </div>
-          </div>
+          {/*<div className={trainerCard.availabilityOuter}>*/}
+          {/*  <div className={trainerCard.availabilityInner}>*/}
+          {/*    <span className={trainerCard.availabilityBackground} />*/}
+          {/*    <span className={trainerCard.availability}>{trainer.availability}</span>*/}
+          {/*  </div>*/}
+          {/*</div>*/}
         </div>
 
         {/* Content section */}
