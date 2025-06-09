@@ -63,6 +63,7 @@ export const updateCoachPricing = async (coachId, pricingData) => {
     const coachRef = doc(db, 'trainers', `coach_${coachId}`);
     await updateDoc(coachRef, {
       price: pricingData.hourlyRate,
+      discounts: pricingData.discounts,
       updatedAt: new Date().toISOString()
     });
     return { success: true };
