@@ -60,17 +60,17 @@ const TimePicker = ({ value, onChange, className, isDefaultSlot }) => {
       <select
         value={hour}
         onChange={(e) => handleTimeChange(e.target.value, minute, period)}
-        className="px-2 py-2 outline-none appearance-none bg-transparent dark:text-white text-sm sm:text-base min-h-[44px]"
+        className="px-2 py-2 outline-none appearance-none bg-transparent dark:text-white text-sm text-center min-h-[44px] w-10 sm:w-12"
       >
         {hourOptions}
       </select>
 
-      <span className="px-1 dark:text-white">:</span>
+      <span className="px-2 py-2 dark:text-white text-sm">:</span>
 
       <select
         value={minute}
         onChange={(e) => handleTimeChange(hour, e.target.value, period)}
-        className="px-2 py-2 outline-none appearance-none bg-transparent dark:text-white text-sm sm:text-base min-h-[44px]"
+        className="px-2 py-2 outline-none appearance-none bg-transparent dark:text-white text-sm text-center min-h-[44px] w-10 sm:w-12"
       >
         {minuteOptions}
       </select>
@@ -78,7 +78,7 @@ const TimePicker = ({ value, onChange, className, isDefaultSlot }) => {
       <select
         value={period}
         onChange={(e) => handleTimeChange(hour, minute, e.target.value)}
-        className="px-2 py-2 outline-none appearance-none bg-transparent dark:text-white text-sm sm:text-base min-h-[44px] border-l border-gray-200 dark:border-stone-600 ml-1"
+        className="px-2 py-2 outline-none appearance-none bg-transparent dark:text-white text-sm text-center min-h-[44px] border-l border-gray-200 dark:border-stone-600 w-12 sm:w-14"
       >
         <option value="AM">AM</option>
         <option value="PM">PM</option>
@@ -110,12 +110,11 @@ const SessionPicker = ({ value, onChange, className }) => {
       <select
         value={minutes}
         onChange={(e) => handleChange(e.target.value)}
-        className="px-2 py-2 outline-none appearance-none bg-transparent dark:text-white text-sm sm:text-base text-center min-h-[44px]"
-        style={{width: '66px'}}
+        className="px-2 py-2 outline-none appearance-none bg-transparent dark:text-white text-sm text-center min-h-[44px] w-16"
       >
         {minuteOptions}
       </select>
-      <span className="px-2 py-2 dark:text-white text-sm sm:text-base border-l border-gray-200 dark:border-stone-600">mins</span>
+      <span className="px-2 py-2 dark:text-white text-sm border-l border-gray-200 dark:border-stone-600">mins</span>
     </div>
   );
 };
@@ -364,13 +363,13 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
       <div className={dashboard.section.content}>
         {days.map(day => (
           <div key={day} className="border dark:border-stone-700 rounded-lg p-3 sm:p-4 mb-4 bg-gray-50 dark:bg-black">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 space-y-2 sm:space-y-0">
+            <div className="flex items-center justify-between mb-3">
               <h4 className="font-medium capitalize dark:text-white">{day}</h4>
               <button
                 onClick={() => addSlot(day)}
-                className={`${dashboard.actions.add} w-full sm:w-auto justify-center sm:justify-start`}
+                className="inline-flex items-center px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition-colors space-x-1"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-3 h-3" />
                 <span>Add Slot</span>
               </button>
             </div>
@@ -409,39 +408,45 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
                   )}
 
                   <div className="rounded-lg p-3">
-                    {/* Mobile Layout - Cleaner and more compact */}
+                    {/* Mobile Layout - Vertical stacking for better space usage */}
                     <div className="block sm:hidden space-y-3">
-                      <div className="flex items-center justify-between">
+                      {/* Time Range Section */}
+                      <div className="space-y-2">
+                        {index === 0 && (
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400 block mb-2">Time Range</span>
+                        )}
                         <div className="flex items-center space-x-2">
-                          <span className="dark:text-white text-sm">Start:</span>
+                          <span className="dark:text-white text-sm w-12">Start:</span>
                           <TimePicker
                             value={slot.start || "00:00"}
                             onChange={(value) => updateAvailability(day, slotKey, 'start', value)}
-                            className="flex-shrink-0"
                             isDefaultSlot={isDefaultSlot(slot)}
                           />
                         </div>
                         <div className="flex items-center space-x-2">
-                          <span className="dark:text-white text-sm">Stop:</span>
+                          <span className="dark:text-white text-sm w-12">Stop:</span>
                           <TimePicker
                             value={slot.end || "00:00"}
                             onChange={(value) => updateAvailability(day, slotKey, 'end', value)}
-                            className="flex-shrink-0"
                             isDefaultSlot={isDefaultSlot(slot)}
                           />
                         </div>
                       </div>
 
-                      <div className="flex items-center">
+                      {/* Session Duration Section */}
+                      <div className="space-y-2">
+                        {index === 0 && (
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400 block mb-2">Session Duration</span>
+                        )}
                         <div className="flex items-center space-x-2">
-                          <span className="dark:text-white text-sm">Min:</span>
+                          <span className="dark:text-white text-sm w-12">Min:</span>
                           <SessionPicker
                             value={slot.minSessionLength || "30"}
                             onChange={(value) => updateAvailability(day, slotKey, 'minSessionLength', value)}
                           />
                         </div>
-                        <div className="flex items-center space-x-2 ml-auto">
-                          <span className="dark:text-white text-sm">Max:</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="dark:text-white text-sm w-12">Max:</span>
                           <SessionPicker
                             value={slot.maxSessionLength || "120"}
                             onChange={(value) => updateAvailability(day, slotKey, 'maxSessionLength', value)}
@@ -449,12 +454,13 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
                         </div>
                       </div>
 
+                      {/* Delete Button */}
                       <div className="flex justify-end pt-1">
                         <button
                           onClick={() => removeSlot(day, slotKey)}
-                          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900 rounded transition-colors"
+                          className="p-1.5 sm:p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900 rounded transition-colors"
                         >
-                          <Trash2 className="w-4 h-4"/>
+                          <Trash2 className="w-3 h-3 sm:w-4 sm:h-4"/>
                         </button>
                       </div>
                     </div>
@@ -506,9 +512,9 @@ export default function AvailabilityTab({ availability: initialAvailability, onA
                       {/* Delete Button - Always on right, aligned properly */}
                       <button
                         onClick={() => removeSlot(day, slotKey)}
-                        className={`p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900 rounded transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center flex-shrink-0 ${index === 0 ? 'mt-6' : ''}`}
+                        className={`p-1.5 sm:p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900 rounded transition-colors min-h-[36px] sm:min-h-[44px] min-w-[36px] sm:min-w-[44px] flex items-center justify-center flex-shrink-0 ${index === 0 ? 'mt-4 sm:mt-6' : ''}`}
                       >
-                        <Trash2 className="w-4 h-4"/>
+                        <Trash2 className="w-3 h-3 sm:w-4 sm:h-4"/>
                       </button>
                     </div>
                   </div>
