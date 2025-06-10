@@ -13,10 +13,10 @@ import {
   cancelBooking,
   updateBooking,
   addBooking
-} from '../../utils/firebaseService'; // Fixed import path
+} from '../../utils'; // Fixed import path
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { dashboard } from '../../utils/classnames'; // Fixed import path
+import { dashboard } from '../../utils'; // Fixed import path
 
 // Individual Components
 import DashboardHeader from '../dashboard/DashboardHeader';

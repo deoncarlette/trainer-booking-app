@@ -305,6 +305,61 @@ export const form = {
 
   error: "text-red-600 dark:text-red-400 text-sm mt-1",
   help: "text-stone-500 dark:text-stone-400 text-sm mt-1",
+
+  // Button styling for forms (MISSING CLASSES ADDED HERE)
+  primaryButton: clsx(
+    "bg-green-600 hover:bg-green-700 disabled:bg-green-400",
+    "text-white font-medium",
+    "py-2 px-4 sm:py-3 sm:px-6",
+    "rounded-lg",
+    "transition-colors",
+    "disabled:opacity-50 disabled:cursor-not-allowed",
+    "flex items-center justify-center",
+    "min-h-[44px]",
+    "text-sm sm:text-base"
+  ),
+
+  secondaryButton: clsx(
+    "bg-stone-100 dark:bg-stone-700",
+    "text-stone-900 dark:text-white",
+    "hover:bg-stone-200 dark:hover:bg-stone-600",
+    "border border-stone-300 dark:border-stone-600",
+    "font-medium",
+    "py-2 px-4 sm:py-3 sm:px-6",
+    "rounded-lg",
+    "transition-colors",
+    "disabled:opacity-50 disabled:cursor-not-allowed",
+    "flex items-center justify-center",
+    "min-h-[44px]",
+    "text-sm sm:text-base"
+  ),
+
+  dangerButton: clsx(
+    "bg-red-600 hover:bg-red-700 disabled:bg-red-400",
+    "text-white font-medium",
+    "py-2 px-4 sm:py-3 sm:px-6",
+    "rounded-lg",
+    "transition-colors",
+    "disabled:opacity-50 disabled:cursor-not-allowed",
+    "flex items-center justify-center",
+    "min-h-[44px]",
+    "text-sm sm:text-base"
+  ),
+
+  buttonGroup: clsx(
+    "flex flex-col sm:flex-row",
+    "gap-3",
+    "mt-4 sm:mt-6"
+  ),
+
+  // Additional specialized form elements
+  timePicker: clsx(
+    "inline-flex items-center",
+    "border border-stone-300 dark:border-stone-600",
+    "rounded-md shadow-sm",
+    "bg-white dark:bg-stone-900",
+    "min-h-[44px]"
+  ),
 }
 
 // Badge/Status System
@@ -611,6 +666,8 @@ export const dashboard = {
 
   main: clsx(base.container, "py-8"),
 
+  mainContent: clsx(base.container, "py-8"),
+
   section: {
     container: clsx(card.base, card.padding.lg, "mb-8"),
     header: clsx(base.flexBetween, "items-start mb-6"),
@@ -631,6 +688,81 @@ export const dashboard = {
     value: clsx(base.typography.h3, tokens.text.primary),
     icon: clsx(base.size.iconLg, "flex-shrink-0"),
   },
+
+  // Form classes for dashboard (THESE WERE MISSING!)
+  form: {
+    group: "space-y-4",
+
+    label: clsx(
+      "block",
+      base.typography.label,
+      tokens.text.primary,
+      "mb-1"
+    ),
+
+    input: clsx(
+      "w-full",
+      tokens.background.primary,
+      tokens.text.primary,
+      tokens.border.light,
+      "border",
+      tokens.radius.md,
+      "px-3 py-2",
+      base.size.touch,
+      base.transitionColors,
+      "placeholder:text-stone-400 dark:placeholder:text-stone-500",
+      "focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent",
+      "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-stone-50 dark:disabled:bg-stone-800"
+    ),
+
+    primaryButton: clsx(
+      "bg-green-600 hover:bg-green-700 disabled:bg-green-400",
+      "text-white font-medium",
+      "py-2 px-4 sm:py-3 sm:px-6",
+      "rounded-lg",
+      "transition-colors",
+      "disabled:opacity-50 disabled:cursor-not-allowed",
+      "flex items-center justify-center",
+      "min-h-[44px]",
+      "text-sm sm:text-base",
+      "w-full sm:w-auto"
+    ),
+
+    secondaryButton: clsx(
+      "bg-stone-100 dark:bg-stone-700",
+      "text-stone-900 dark:text-white",
+      "hover:bg-stone-200 dark:hover:bg-stone-600",
+      "border border-stone-300 dark:border-stone-600",
+      "font-medium",
+      "py-2 px-4 sm:py-3 sm:px-6",
+      "rounded-lg",
+      "transition-colors",
+      "disabled:opacity-50 disabled:cursor-not-allowed",
+      "flex items-center justify-center",
+      "min-h-[44px]",
+      "text-sm sm:text-base",
+      "w-full sm:w-auto"
+    ),
+
+    dangerButton: clsx(
+      "bg-red-600 hover:bg-red-700 disabled:bg-red-400",
+      "text-white font-medium",
+      "py-2 px-4 sm:py-3 sm:px-6",
+      "rounded-lg",
+      "transition-colors",
+      "disabled:opacity-50 disabled:cursor-not-allowed",
+      "flex items-center justify-center",
+      "min-h-[44px]",
+      "text-sm sm:text-base",
+      "w-full sm:w-auto"
+    ),
+
+    buttonGroup: clsx(
+      "flex flex-col sm:flex-row",
+      "gap-3",
+      "mt-4 sm:mt-6"
+    ),
+  },
 }
 
 // Status Indicators
@@ -648,7 +780,7 @@ export const theme = {
     tokens.radius.md,
     "text-white/80 hover:text-white",
     "hover:bg-white/10",
-    base.transitionColors
+    base.transitionColors,
   ),
 }
 
