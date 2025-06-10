@@ -1,5 +1,5 @@
 import React from 'react';
-import { dashboard } from '../../utils/classnames';
+import { dashboard } from '../../utils';
 
 export default function DashboardNavigation({ tabs, activeTab, setActiveTab }) {
   return (

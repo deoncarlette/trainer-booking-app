@@ -1,850 +1,792 @@
-// utils/classnames.js
+// utils/classnames.js - Enhanced Design System
 import clsx from "clsx"
 
-// Base utility functions for common patterns
+// ===========================================
+// DESIGN TOKENS - Green/Stone Color System
+// ===========================================
+
+const tokens = {
+  // Primary Green Palette (from the designs)
+  primary: {
+    50: 'bg-green-50',
+    100: 'bg-green-100',
+    500: 'bg-green-500',
+    600: 'bg-green-600', // Main brand color
+    700: 'bg-green-700',
+    800: 'bg-green-800',
+    900: 'bg-green-900',
+  },
+
+  // Stone-based Neutrals (replacing gray)
+  neutral: {
+    50: 'bg-stone-50',
+    100: 'bg-stone-100',
+    200: 'bg-stone-200',
+    300: 'bg-stone-300',
+    400: 'bg-stone-400',
+    500: 'bg-stone-500',
+    600: 'bg-stone-600',
+    700: 'bg-stone-700',
+    800: 'bg-stone-800',
+    900: 'bg-stone-900',
+    950: 'bg-stone-950',
+  },
+
+  // Text Colors
+  text: {
+    primary: 'text-stone-900 dark:text-white',
+    secondary: 'text-stone-600 dark:text-stone-300',
+    muted: 'text-stone-500 dark:text-stone-400',
+    inverse: 'text-white dark:text-stone-900',
+    brand: 'text-green-600 dark:text-green-400',
+    error: 'text-red-600 dark:text-red-400',
+    success: 'text-green-600 dark:text-green-400',
+    warning: 'text-amber-600 dark:text-amber-400',
+  },
+
+  // Border Colors
+  border: {
+    light: 'border-stone-200 dark:border-stone-700',
+    medium: 'border-stone-300 dark:border-stone-600',
+    heavy: 'border-stone-400 dark:border-stone-500',
+    brand: 'border-green-600 dark:border-green-400',
+  },
+
+  // Background Colors
+  background: {
+    primary: 'bg-white dark:bg-stone-900',
+    secondary: 'bg-stone-50 dark:bg-stone-800',
+    tertiary: 'bg-stone-100 dark:bg-stone-700',
+    brand: 'bg-green-600',
+    brandLight: 'bg-green-50 dark:bg-green-900/20',
+    overlay: 'bg-stone-900/50',
+  },
+
+  // Shadows
+  shadow: {
+    sm: 'shadow-sm',
+    md: 'shadow-md',
+    lg: 'shadow-lg',
+    xl: 'shadow-xl',
+  },
+
+  // Border Radius
+  radius: {
+    none: 'rounded-none',
+    sm: 'rounded-sm',
+    md: 'rounded-md',
+    lg: 'rounded-lg',
+    xl: 'rounded-xl',
+    full: 'rounded-full',
+  },
+
+  // Spacing
+  spacing: {
+    xs: 'p-2',
+    sm: 'p-3',
+    md: 'p-4',
+    lg: 'p-6',
+    xl: 'p-8',
+  },
+}
+
+// ===========================================
+// BASE UTILITIES
+// ===========================================
+
 const base = {
-  // Container patterns
-  container: "container mx-auto px-4",
+  // Layout
+  container: "container mx-auto px-4 sm:px-6 lg:px-8",
   flexCenter: "flex items-center justify-center",
-  flexBetween: "flex justify-between items-center",
+  flexBetween: "flex items-center justify-between",
   flexStart: "flex items-center justify-start",
   flexCol: "flex flex-col",
 
-  // Spacing
-  space: {
-    x1: "space-x-1",
-    x2: "space-x-2",
-    x3: "space-x-3",
-    x4: "space-x-4",
-    x6: "space-x-6",
-    y3: "space-y-3",
-    y4: "space-y-4",
-    y6: "space-y-6",
-  },
-
-  // Common sizing
-  size: {
-    full: "w-full h-full",
-    icon: "w-8 h-8",
-    iconSm: "w-4 h-4",
-    iconLg: "w-5 h-5",
-    avatar: "w-12 h-12",
-    avatarSm: "w-10 h-10",
-    avatarLg: "w-32 h-32",
-  },
-
-  // Border radius
-  rounded: {
-    sm: "rounded-md",
-    lg: "rounded-lg",
-    xl: "rounded-xl",
-    full: "rounded-full",
+  // Grid Systems
+  grid: {
+    responsive: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6",
+    cards: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4",
+    form: "grid grid-cols-1 md:grid-cols-2 gap-4",
+    stats: "grid grid-cols-2 lg:grid-cols-4 gap-4",
   },
 
   // Transitions
-  transition: "transition duration-300",
-  transitionColors: "transition",
+  transition: "transition-all duration-200 ease-in-out",
+  transitionColors: "transition-colors duration-200 ease-in-out",
+  transitionTransform: "transition-transform duration-200 ease-in-out",
 
-  // Grid layouts
-  grid: {
-    responsive: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
-    flexResponsive: "flex flex-col md:flex-row md:space-x-6",
-    cols2: "grid grid-cols-1 md:grid-cols-2 gap-4",
-    cols3: "grid grid-cols-1 md:grid-cols-3 gap-6",
-    cols4: "grid grid-cols-1 md:grid-cols-4 gap-4",
+  // Common Sizes
+  size: {
+    full: "w-full h-full",
+    icon: "w-5 h-5",
+    iconSm: "w-4 h-4",
+    iconLg: "w-6 h-6",
+    avatar: "w-10 h-10",
+    avatarLg: "w-12 h-12",
+    touch: "min-h-[44px]", // Accessibility touch target
+  },
+
+  // Typography
+  typography: {
+    h1: "text-2xl sm:text-3xl lg:text-4xl font-bold",
+    h2: "text-xl sm:text-2xl lg:text-3xl font-bold",
+    h3: "text-lg sm:text-xl font-semibold",
+    h4: "text-base sm:text-lg font-semibold",
+    body: "text-sm sm:text-base",
+    caption: "text-xs sm:text-sm",
+    label: "text-sm font-medium",
   },
 }
 
-// Color schemes for consistent theming
-const colors = {
-  // Primary colors (green theme)
-  primary: {
-    base: "bg-green-600 text-white",
-    hover: "hover:bg-green-700",
-    dark: "bg-green-700",
-    light: "bg-green-500",
-    text: "text-green-600",
-    gradient: "bg-gradient-to-r from-green-500 to-green-600",
-    gradientDark: "bg-gradient-to-r from-green-900 to-green-600",
-  },
+// ===========================================
+// COMPONENT DESIGN SYSTEM
+// ===========================================
 
-  // Secondary colors (blue theme for dashboard)
-  secondary: {
-    base: "bg-blue-500 text-white",
-    hover: "hover:bg-blue-600",
-    dark: "bg-blue-600",
-    light: "bg-blue-400",
-    text: "text-blue-600",
-    bg: "bg-blue-50 dark:bg-blue-900",
-  },
-
-  // Status colors
-  status: {
-    success: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-    warning: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-    error: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-    info: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  },
-
-  // Dark mode variants
-  dark: {
-    bg: "dark:bg-stone-800",
-    bgAlt: "dark:bg-black",
-    bgInput: "dark:bg-stone-700",
-    bgCard: "dark:bg-stone-900",
-    bgDashboard: "dark:bg-black",
-    bgDashboardCard: "dark:bg-zinc-900",
-    text: "dark:text-stone-100",
-    textAlt: "dark:text-gray-100",
-    textMuted: "dark:text-gray-400",
-    border: "dark:border-gray-700",
-    borderInput: "dark:border-gray-600",
-    hover: "dark:hover:bg-gray-700",
-    hoverCard: "dark:hover:bg-gray-750",
-  },
-
-  // Light mode variants
-  light: {
-    bg: "bg-white",
-    bgAlt: "bg-gray-50",
-    bgInput: "bg-gray-100",
-    bgDashboard: "bg-gray-100",
-    text: "text-gray-800",
-    textMuted: "text-gray-600",
-    textLight: "text-gray-700",
-    border: "border-gray-300",
-    borderInput: "border-gray-600",
-    hover: "hover:bg-gray-50",
-    hoverAlt: "hover:bg-gray-200",
-  },
-}
-
-// Component-specific mixins
-const components = {
-  // Card variants
-  card: clsx(
-    base.rounded.xl,
-    "shadow-md overflow-hidden",
-    base.transition,
-    colors.light.bg,
-    colors.dark.bgAlt,
-    colors.dark.textAlt
+// Button System
+export const button = {
+  // Base button styles
+  base: clsx(
+    "inline-flex items-center justify-center",
+    "font-medium",
+    "border border-transparent",
+    tokens.radius.md,
+    base.transitionColors,
+    "focus:outline-none focus:ring-2 focus:ring-offset-2",
+    "disabled:opacity-50 disabled:cursor-not-allowed",
+    base.size.touch,
   ),
 
-  dashboardCard: clsx(
-    base.rounded.lg,
-    "shadow",
-    colors.light.bg,
-    colors.dark.bgDashboardCard,
-    "p-6"
-  ),
+  // Size Variants
+  size: {
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-4 py-2 text-sm sm:text-base",
+    lg: "px-6 py-3 text-base",
+    xl: "px-8 py-4 text-lg",
+  },
 
-  // Button variants
-  button: {
+  // Style Variants
+  variant: {
     primary: clsx(
-      colors.primary.base,
-      colors.primary.hover,
-      "font-medium py-2 px-4",
-      base.rounded.lg,
-      base.transitionColors
+      tokens.primary[600],
+      "text-white",
+      "hover:bg-green-700",
+      "focus:ring-green-500",
+      "active:bg-green-800"
     ),
     secondary: clsx(
-      colors.secondary.base,
-      colors.secondary.hover,
-      "font-medium py-2 px-4",
-      base.rounded.lg,
-      base.transitionColors
+      tokens.background.primary,
+      tokens.text.primary,
+      tokens.border.light,
+      "border",
+      "hover:bg-stone-50 dark:hover:bg-stone-800",
+      "focus:ring-green-500"
     ),
     outline: clsx(
-      colors.light.bg,
-      colors.light.border,
-      base.rounded.sm,
-      "px-3 py-1.5",
-      base.flexCenter,
-      base.space.x1,
-      "text-sm",
-      colors.light.hover,
-      base.transitionColors
+      "bg-transparent",
+      tokens.text.brand,
+      "border border-green-600",
+      "hover:bg-green-50 dark:hover:bg-green-900/20",
+      "focus:ring-green-500"
     ),
-    icon: clsx(
-      "p-2",
-      base.rounded.full,
-      colors.light.hoverAlt,
-      colors.dark.hover,
-      base.transitionColors
+    ghost: clsx(
+      "bg-transparent",
+      tokens.text.primary,
+      "hover:bg-stone-100 dark:hover:bg-stone-800",
+      "focus:ring-green-500"
     ),
-    small: clsx(
-      "px-3 py-1 text-sm",
-      base.rounded.sm,
-      base.transitionColors
+    danger: clsx(
+      "bg-red-600 text-white",
+      "hover:bg-red-700",
+      "focus:ring-red-500"
     ),
   },
 
-  // Input variants
+  // Convenience Combinations
+  primary: clsx(this?.base, this?.size?.md, this?.variant?.primary),
+  secondary: clsx(this?.base, this?.size?.md, this?.variant?.secondary),
+}
+
+// Card System
+export const card = {
+  base: clsx(
+    tokens.background.primary,
+    tokens.border.light,
+    "border",
+    tokens.radius.lg,
+    tokens.shadow.md,
+    "overflow-hidden",
+    base.transition
+  ),
+
+  variants: {
+    default: "",
+    elevated: tokens.shadow.lg,
+    flat: "shadow-none border-0",
+    outlined: clsx(tokens.border.medium, "border-2"),
+  },
+
+  padding: {
+    none: "",
+    sm: "p-4",
+    md: "p-6",
+    lg: "p-8",
+  },
+
+  interactive: clsx(
+    "cursor-pointer",
+    "hover:shadow-lg hover:-translate-y-1",
+    base.transitionTransform
+  ),
+}
+
+// Form System
+export const form = {
+  group: "space-y-4",
+
+  label: clsx(
+    "block",
+    base.typography.label,
+    tokens.text.primary,
+    "mb-1"
+  ),
+
   input: clsx(
     "w-full",
-    colors.light.borderInput,
-    colors.light.bgInput,
-    colors.dark.bgInput,
-    colors.dark.text,
-    colors.dark.borderInput,
-    base.rounded.sm,
+    tokens.background.primary,
+    tokens.text.primary,
+    tokens.border.light,
+    "border",
+    tokens.radius.md,
     "px-3 py-2",
-    "border"
+    base.size.touch,
+    base.transitionColors,
+    "placeholder:text-stone-400 dark:placeholder:text-stone-500",
+    "focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent",
+    "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-stone-50 dark:disabled:bg-stone-800"
   ),
 
-  // Text variants
-  text: {
-    heading: clsx("font-bold", colors.light.text, colors.dark.text),
-    subheading: clsx("font-medium", colors.primary.text),
-    muted: clsx("text-sm", colors.light.textMuted, colors.dark.textMuted),
-    label: clsx("block text-sm font-medium mb-1", colors.light.textLight, colors.dark.text),
+  textarea: clsx(
+    "w-full",
+    tokens.background.primary,
+    tokens.text.primary,
+    tokens.border.light,
+    "border",
+    tokens.radius.md,
+    "px-3 py-2",
+    "resize-none",
+    base.transitionColors,
+    "placeholder:text-stone-400 dark:placeholder:text-stone-500",
+    "focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent",
+    "disabled:opacity-50 disabled:cursor-not-allowed"
+  ),
+
+  select: clsx(
+    "w-full",
+    tokens.background.primary,
+    tokens.text.primary,
+    tokens.border.light,
+    "border",
+    tokens.radius.md,
+    "px-3 py-2",
+    base.size.touch,
+    base.transitionColors,
+    "focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent",
+    "disabled:opacity-50 disabled:cursor-not-allowed"
+  ),
+
+  checkbox: clsx(
+    "h-4 w-4",
+    "text-green-600",
+    tokens.border.medium,
+    "border",
+    tokens.radius.sm,
+    "focus:ring-green-500 focus:ring-2"
+  ),
+
+  error: "text-red-600 dark:text-red-400 text-sm mt-1",
+  help: "text-stone-500 dark:text-stone-400 text-sm mt-1",
+
+  // Button styling for forms (MISSING CLASSES ADDED HERE)
+  primaryButton: clsx(
+    "bg-green-600 hover:bg-green-700 disabled:bg-green-400",
+    "text-white font-medium",
+    "py-2 px-4 sm:py-3 sm:px-6",
+    "rounded-lg",
+    "transition-colors",
+    "disabled:opacity-50 disabled:cursor-not-allowed",
+    "flex items-center justify-center",
+    "min-h-[44px]",
+    "text-sm sm:text-base"
+  ),
+
+  secondaryButton: clsx(
+    "bg-stone-100 dark:bg-stone-700",
+    "text-stone-900 dark:text-white",
+    "hover:bg-stone-200 dark:hover:bg-stone-600",
+    "border border-stone-300 dark:border-stone-600",
+    "font-medium",
+    "py-2 px-4 sm:py-3 sm:px-6",
+    "rounded-lg",
+    "transition-colors",
+    "disabled:opacity-50 disabled:cursor-not-allowed",
+    "flex items-center justify-center",
+    "min-h-[44px]",
+    "text-sm sm:text-base"
+  ),
+
+  dangerButton: clsx(
+    "bg-red-600 hover:bg-red-700 disabled:bg-red-400",
+    "text-white font-medium",
+    "py-2 px-4 sm:py-3 sm:px-6",
+    "rounded-lg",
+    "transition-colors",
+    "disabled:opacity-50 disabled:cursor-not-allowed",
+    "flex items-center justify-center",
+    "min-h-[44px]",
+    "text-sm sm:text-base"
+  ),
+
+  buttonGroup: clsx(
+    "flex flex-col sm:flex-row",
+    "gap-3",
+    "mt-4 sm:mt-6"
+  ),
+
+  // Additional specialized form elements
+  timePicker: clsx(
+    "inline-flex items-center",
+    "border border-stone-300 dark:border-stone-600",
+    "rounded-md shadow-sm",
+    "bg-white dark:bg-stone-900",
+    "min-h-[44px]"
+  ),
+}
+
+// Badge/Status System
+export const badge = {
+  base: clsx(
+    "inline-flex items-center",
+    "px-2.5 py-0.5",
+    "text-xs font-medium",
+    tokens.radius.full
+  ),
+
+  variants: {
+    default: clsx(tokens.background.secondary, tokens.text.primary),
+    primary: clsx(tokens.primary[600], "text-white"),
+    success: clsx("bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300"),
+    warning: clsx("bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-300"),
+    error: clsx("bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300"),
+    info: clsx("bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300"),
   },
-
-  // Badge/Status indicators
-  badge: clsx(
-    "px-2 py-1 text-xs",
-    base.rounded.full,
-    "font-medium"
-  ),
 }
 
-// Main component exports
+// ===========================================
+// PAGE LAYOUTS
+// ===========================================
+
+// App Layout
 export const app = {
-  main: clsx("min-h-screen", base.flexCol, colors.dark.bg, colors.dark.text),
-  container: clsx("flex-grow", base.container, "py-6"),
+  main: clsx(
+    "min-h-screen",
+    tokens.background.secondary,
+    tokens.text.primary,
+    base.flexCol
+  ),
+  container: clsx(base.container, "flex-1 py-6"),
 }
 
+// Navigation
+export const navbar = {
+  nav: clsx(
+    tokens.primary[600],
+    "text-white",
+    tokens.shadow.lg,
+    "sticky top-0 z-50"
+  ),
+  container: clsx(base.container, "py-4"),
+  inner: clsx(base.flexBetween),
+  brand: clsx(base.flexStart, "space-x-3"),
+  logo: clsx(base.size.iconLg),
+  title: clsx(base.typography.h3, "text-white"),
+  actions: clsx(base.flexStart, "space-x-2"),
+}
+
+// Page Header
 export const header = {
   container: clsx(base.flexBetween, "mb-6"),
-  h1: clsx("text-2xl md:text-2xl", components.text.heading),
-  button: components.button.outline,
+  content: clsx(base.flexCol, "space-y-1"),
+  title: clsx(base.typography.h1, tokens.text.primary),
+  subtitle: clsx(base.typography.body, tokens.text.secondary),
+  actions: clsx(base.flexStart, "space-x-3"),
 }
 
-export const navbar = {
-  nav: clsx(colors.primary.base, "shadow-lg"),
-  outer: clsx(base.container, "py-3", base.flexBetween),
-  inner: clsx(base.flexCenter, base.space.x2),
-  button: clsx(
-    base.size.icon,
-    base.rounded.full,
-    colors.primary.dark,
-    base.flexCenter,
-    "font-bold"
-  ),
-}
+// ===========================================
+// COMPONENT-SPECIFIC STYLES
+// ===========================================
 
-export const theme = {
-  toggleButton: components.button.icon,
-  dark: "text-yellow-500",
-  light: colors.light.textLight,
-}
-
-export const trainerList = {
-  container: clsx(base.grid.responsive, "mb-8"),
-}
-
+// Trainer Cards
 export const trainerCard = {
-  container: clsx(components.card, "trainer-card"),
-  imageContainer: clsx(
-    "h-40",
-    colors.primary.gradient,
-    base.flexCenter
-  ),
-  availabilityOuter: "absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4",
-  availabilityInner: clsx(base.flexCenter, base.space.x2),
-  availabilityBackground: clsx(colors.primary.light, base.rounded.full, "w-2 h-2"),
-  availability: "text-white text-sm",
-  nameContainer: "justify-between items-start",
-  name: clsx("text-lg", components.text.heading),
-  specialty: components.text.subheading,
-  location: clsx("mt-3", components.text.muted),
-  duration: components.text.muted,
-  bookContainer: clsx("mt-3", base.flexBetween),
-  priceContainer: colors.light.text,
-  price: clsx("font-bold text-xl", colors.dark.text),
-  session: components.text.muted,
-  bookButton: components.button.primary,
-}
-
-export const bookingSection = {
-  bookingOuter: clsx(
-    colors.light.bg,
-    base.rounded.xl,
-    "shadow-lg p-5 mb-8",
-    colors.dark.bgAlt,
-    colors.dark.textAlt
-  ),
-  h2: clsx("text-xl", components.text.heading, "mb-4"),
-  bookingInner: base.grid.flexResponsive,
-  session: "md:w-1/3 mb-6 md:mb-0",
-}
-
-export const trainerProfile = {
-  outerContainer: clsx(
-    colors.primary.gradientDark,
-    "text-white",
-    base.rounded.lg,
-    "p-4 mb-4"
-  ),
-  innerContainer: clsx(base.flexStart, base.space.x3),
-  initials: clsx(
-    base.size.avatar,
-    colors.light.bg,
-    colors.primary.text,
-    base.rounded.full,
-    base.flexCenter,
-    "font-bold text-xl"
-  ),
-  name: "font-bold",
-}
-
-export const sessionDetails = {
   container: clsx(
-    colors.light.bgAlt,
-    "text-gray-950",
-    colors.dark.bgCard,
-    colors.dark.text,
-    base.rounded.lg,
-    "p-4"
+    card.base,
+    card.interactive,
+    "group"
   ),
-  h4: "font-medium mb-3",
-  innerContainer: base.space.y3,
-  label: components.text.label,
-  text: components.input,
+
+  imageSection: clsx(
+    "h-40 relative overflow-hidden",
+    "bg-gradient-to-br from-green-400 to-green-600"
+  ),
+
+  image: clsx(
+    "w-full h-full object-cover",
+    "group-hover:scale-105",
+    base.transitionTransform
+  ),
+
+  placeholder: clsx(
+    "w-full h-full",
+    base.flexCenter,
+    "text-white/30"
+  ),
+
+  badge: clsx(
+    "absolute top-3 left-3",
+    badge.base,
+    badge.variants.success
+  ),
+
+  content: clsx(card.padding.md, "space-y-3"),
+
+  header: clsx(base.flexBetween, "items-start"),
+
+  title: clsx(base.typography.h4, tokens.text.primary),
+
+  specialty: clsx(base.typography.body, tokens.text.brand),
+
+  location: clsx(base.typography.caption, tokens.text.secondary),
+
+  footer: clsx(base.flexBetween, "items-center", "mt-4"),
+
+  price: clsx(base.typography.h4, tokens.text.primary),
+
+  priceLabel: clsx(base.typography.caption, tokens.text.secondary),
 }
 
-// Calendar component styles
+// Calendar Component
 export const calendar = {
   container: clsx(
-    "w-full p-4",
-    base.rounded.sm,
-    colors.light.bg,
-    colors.dark.bgCard,
-    colors.dark.text,
-    "shadow-md mb-5"
+    card.base,
+    card.padding.md,
+    "space-y-4"
   ),
 
-  heading: clsx(
-    "font-medium mb-3",
-    "text-gray-900 dark:text-white"
-  ),
+  header: clsx(base.flexBetween, "items-center"),
 
-  wrapper: clsx(
-    "border border-gray-200",
-    base.rounded.lg
-  ),
+  title: clsx(base.typography.h4, tokens.text.primary),
 
-  monthNav: clsx(
-    base.flexBetween,
-    "mb-2 border border-gray-300 p-3"
-  ),
+  navigation: clsx(base.flexStart, "space-x-4"),
 
   navButton: clsx(
-    "text-gray-500",
-    "hover:text-gray-900 dark:hover:text-white"
+    "p-2",
+    tokens.radius.md,
+    tokens.text.secondary,
+    "hover:bg-stone-100 dark:hover:bg-stone-800",
+    base.transitionColors
   ),
 
-  monthTitle: clsx(
-    "text-gray-800 dark:text-gray-200 font-semibold"
+  monthTitle: clsx(base.typography.label, tokens.text.primary),
+
+  weekdays: clsx(
+    "grid grid-cols-7 gap-1 mb-2",
+    "text-center text-xs font-medium",
+    tokens.text.secondary
   ),
 
-  weekdayContainer: clsx(
-    "grid grid-cols-7 gap-1 mb-1",
-    "text-center text-xs",
-    "text-gray-500 dark:text-gray-400"
-  ),
+  dates: "grid grid-cols-7 gap-1",
 
-  dateGrid: "grid grid-cols-7 gap-1",
-
-  dateCell: {
+  date: {
     base: clsx(
-      "h-8",
+      "h-10 w-full",
       base.flexCenter,
-      base.rounded.sm,
-      "text-sm",
-      base.transitionColors
+      base.typography.caption,
+      tokens.radius.md,
+      base.transitionColors,
+      "cursor-pointer"
     ),
-
-    selected: clsx(
-      colors.primary.base
-    ),
-
     available: clsx(
-      "text-gray-900 dark:text-white",
-      "cursor-pointer",
-      "hover:bg-gray-200 dark:hover:bg-gray-700"
+      tokens.text.primary,
+      "hover:bg-green-50 dark:hover:bg-green-900/20"
     ),
-
+    selected: clsx(
+      tokens.primary[600],
+      "text-white"
+    ),
     unavailable: clsx(
-      "bg-gray-200 text-stone-400",
-      "dark:bg-stone-700 dark:text-stone-500",
+      tokens.text.muted,
+      "cursor-not-allowed opacity-50"
+    ),
+  },
+}
+
+// Time Slots
+export const timeSlots = {
+  container: clsx(card.base, card.padding.md),
+
+  header: clsx("space-y-2 mb-4"),
+
+  title: clsx(base.typography.h4, tokens.text.primary),
+
+  subtitle: clsx(base.typography.body, tokens.text.secondary),
+
+  grid: "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3",
+
+  slot: {
+    base: clsx(
+      "p-3 text-center",
+      tokens.border.light,
+      "border",
+      tokens.radius.md,
+      base.typography.caption,
+      "font-medium",
+      base.transitionColors,
+      "cursor-pointer"
+    ),
+    available: clsx(
+      tokens.background.primary,
+      tokens.text.primary,
+      "hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-300"
+    ),
+    selected: clsx(
+      tokens.primary[600],
+      "text-white border-green-600"
+    ),
+    unavailable: clsx(
+      tokens.background.tertiary,
+      tokens.text.muted,
       "cursor-not-allowed"
     ),
   },
 }
 
-export const timeSlots = {
-  container: clsx(
-    colors.dark.bgCard,
-    colors.dark.text,
-    "p-4"
-  ),
-
-  heading: "font-medium mb-2",
-
-  dateDisplay: clsx(
-    "text-sm text-gray-400 mb-2"
-  ),
-
-  emptyState: clsx(
-    "text-gray-500 text-sm italic"
-  ),
-
-  grid: clsx(
-    "grid grid-cols-3 sm:grid-cols-4 gap-2 mb-4"
-  ),
-
-  slotButton: {
-    base: clsx(
-      "py-2 px-2 text-center",
-      base.rounded.sm,
-      "border text-sm",
-      base.transitionColors
-    ),
-
-    selected: clsx(
-      colors.primary.base,
-      "border-green-600"
-    ),
-
-    available: clsx(
-      "border-gray-600 text-gray-300",
-      "hover:bg-gray-100 dark:hover:bg-stone-700"
-    ),
-  },
-
-  summary: {
-    container: clsx(
-      "border-t border-gray-600 pt-4 text-sm"
-    ),
-
-    text: "mb-1",
-
-    label: "font-bold",
-  },
-}
-
+// Booking Summary
 export const bookingSummary = {
-  container: clsx(
-    colors.light.bg,
-    base.rounded.xl,
-    "shadow-lg p-5 mb-8",
-    colors.dark.bgAlt,
-    colors.dark.textAlt
-  ),
+  container: clsx(card.base, card.padding.md),
 
-  heading: clsx(
-    "text-xl font-bold mb-4",
-    colors.light.text,
-    colors.dark.textAlt
-  ),
+  header: clsx(base.flexBetween, "items-center mb-4"),
 
-  emptyState: clsx(
-    "text-gray-500 text-center py-4 italic"
-  ),
+  title: clsx(base.typography.h4, tokens.text.primary),
 
   clearButton: clsx(
-    "text-red-500 hover:text-red-700 text-sm font-medium",
+    base.typography.caption,
+    "text-red-600 hover:text-red-700",
+    "font-medium underline",
     base.transitionColors
   ),
 
-  dateGroup: {
-    container: "mb-6 last:mb-0",
+  sessions: "space-y-4",
 
-    date: clsx(
-      "font-semibold text-lg mb-3",
-      colors.primary.text
+  session: {
+    container: clsx(
+      tokens.background.secondary,
+      tokens.border.light,
+      "border",
+      tokens.radius.md,
+      "p-4"
     ),
-
-    timeBlock: {
-      container: clsx(
-        "bg-gray-50 dark:bg-stone-800",
-        base.rounded.lg,
-        "p-4 mb-3 last:mb-0"
-      ),
-
-      header: clsx(
-        base.flexBetween,
-        "items-start mb-2"
-      ),
-
-      timeRange: clsx(
-        "font-medium",
-        colors.light.text,
-        colors.dark.text
-      ),
-
-      removeButton: clsx(
-        "text-red-500 hover:text-red-700 text-xs",
-        base.transitionColors
-      ),
-
-      details: clsx(
-        "text-sm",
-        colors.light.textMuted,
-        colors.dark.text
-      ),
-
-      price: clsx(
-        "font-bold text-lg",
-        colors.primary.text
-      ),
-
-      breakdown: clsx(
-        "text-xs text-gray-500 dark:text-gray-400"
-      ),
-    },
+    header: clsx(base.flexBetween, "items-start mb-2"),
+    details: "space-y-1",
+    remove: clsx(
+      base.typography.caption,
+      "text-red-600 hover:text-red-700",
+      "font-medium",
+      base.transitionColors
+    ),
   },
 
   total: {
     container: clsx(
-      "border-t pt-4 mt-4",
-      "border-gray-200 dark:border-gray-600"
+      "border-t",
+      tokens.border.light,
+      "pt-4 mt-4"
     ),
-
-    row: clsx(
-      base.flexBetween,
-      "mb-2 last:mb-0"
-    ),
-
-    label: clsx(
-      "font-medium",
-      colors.light.text,
-      colors.dark.text
-    ),
-
-    value: clsx(
-      "font-bold",
-      colors.light.text,
-      colors.dark.text
-    ),
-
-    grandTotal: clsx(
-      "text-xl font-bold",
-      colors.primary.text
-    ),
+    row: clsx(base.flexBetween, "items-center"),
+    label: clsx(base.typography.body, tokens.text.primary),
+    value: clsx(base.typography.body, "font-semibold", tokens.text.primary),
+    grandTotal: clsx(base.typography.h4, tokens.text.brand),
   },
 }
 
-// Dashboard component styles - MOBILE RESPONSIVE VERSION
+// Dashboard Specific
 export const dashboard = {
-  // Main layout
-  layout: clsx(
-    "min-h-screen",
-    "border-radius: 0.5rem",
-    colors.light.bgDashboard,
-    colors.dark.bgDashboard
-  ),
+  layout: clsx("min-h-screen", tokens.background.secondary),
 
-  mainContent: clsx(
-    "max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8"
-  ),
-
-  // Header - Mobile responsive
   header: {
     container: clsx(
-      colors.light.bg,
-      colors.dark.bgDashboardCard,
-      "shadow"
+      tokens.background.primary,
+      tokens.shadow.sm,
+      "sticky top-0 z-40"
     ),
-
-    inner: clsx(
-      "max-w-7xl mx-auto px-2 sm:px-4 lg:px-8"
-    ),
-
-    content: clsx(
-      "flex justify-between items-center", // Always horizontal layout
-      "py-4 sm:py-6"
-    ),
-
-    left: clsx(
-      "flex items-center space-x-3 sm:space-x-4 min-w-0 flex-1"
-    ),
-
-    avatar: clsx(
-      "w-10 h-10 sm:w-12 sm:h-12", // Slightly larger for better visibility
-      base.rounded.full,
-      "object-cover flex-shrink-0"
-    ),
-
-    title: clsx(
-      "text-lg sm:text-2xl font-bold truncate", // Add truncate for long text
-      colors.light.text,
-      colors.dark.text
-    ),
-
-    subtitle: clsx(
-      "text-sm sm:text-base truncate", // Add truncate for long text
-      colors.light.textMuted,
-      colors.dark.textMuted
-    ),
-
-    right: clsx(
-      "flex items-center space-x-2 sm:space-x-4 flex-shrink-0" // Prevent shrinking
-    ),
-
-    iconButton: clsx(
-      "p-2 rounded-full", // Make it more touch-friendly
-      colors.light.textMuted,
-      colors.dark.textMuted,
-      "hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700",
-      "transition-colors"
-    ),
-
-    primaryButton: clsx(
-      components.button.secondary,
-      "text-sm px-3 py-2 whitespace-nowrap" // Prevent text wrapping
-    ),
+    inner: clsx(base.container, "py-4"),
+    content: clsx(base.flexBetween),
+    left: clsx(base.flexStart, "space-x-4"),
+    title: clsx(base.typography.h2, tokens.text.primary),
+    right: clsx(base.flexStart, "space-x-3"),
   },
 
-  // Navigation tabs - Mobile responsive
   navigation: {
     container: clsx(
-      colors.light.bg,
-      colors.dark.bgDashboardCard,
+      tokens.background.primary,
       "border-b",
-      colors.dark.border,
-      "overflow-x-auto" // Allow horizontal scroll on mobile
+      tokens.border.light,
+      "sticky top-16 z-30",
+      "overflow-x-auto"
     ),
-
-    inner: clsx(
-      "max-w-7xl mx-auto px-2 sm:px-4 lg:px-8"
-    ),
-
-    tabs: clsx(
-      "flex space-x-1 sm:space-x-2 md:space-x-8",
-      "min-w-max" // Prevent tabs from shrinking too much
-    ),
-
+    inner: clsx(base.container),
+    tabs: clsx("flex space-x-8 min-w-max"),
     tab: {
       base: clsx(
-        "flex items-center space-x-1 sm:space-x-2",
-        "py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium",
-        "text-xs sm:text-sm whitespace-nowrap", // Prevent text wrapping
-        base.transitionColors
+        base.flexStart,
+        "space-x-2 py-4 px-1",
+        "border-b-2 font-medium text-sm",
+        base.transitionColors,
+        "whitespace-nowrap"
       ),
-
       active: clsx(
-        "border-blue-500 text-blue-600 dark:text-blue-400"
+        "border-green-500",
+        tokens.text.brand
       ),
-
       inactive: clsx(
         "border-transparent",
-        colors.light.textMuted,
-        colors.dark.textMuted,
-        "hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300"
+        tokens.text.secondary,
+        "hover:text-stone-700 dark:hover:text-stone-300"
       ),
     },
   },
 
-  // Stats cards - Mobile responsive grid
-  stats: {
-    grid: "grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4",
+  main: clsx(base.container, "py-8"),
 
-    card: clsx(
-      components.dashboardCard,
-      "p-3 sm:p-6", // Smaller padding on mobile
-      "flex flex-col sm:flex-row sm:justify-between"
-    ),
+  mainContent: clsx(base.container, "py-8"),
 
-    content: "flex-1 mb-2 sm:mb-0",
-
-    label: clsx(
-      "text-xs sm:text-sm",
-      colors.light.textMuted,
-      colors.dark.textMuted
-    ),
-
-    value: clsx(
-      "text-lg sm:text-2xl font-bold",
-      colors.light.text,
-      colors.dark.text
-    ),
-
-    icon: clsx(
-      "w-6 h-6 sm:w-8 sm:h-8",
-      "flex-shrink-0 self-center"
-    ),
-  },
-
-  // Content sections - Mobile responsive
   section: {
-    container: clsx(
-      components.dashboardCard,
-      "p-3 sm:p-6" // Smaller padding on mobile
-    ),
-
-    header: clsx(
-      "flex flex-col sm:flex-row sm:justify-between sm:items-center",
-      "mb-4 space-y-2 sm:space-y-0"
-    ),
-
-    title: clsx(
-      "text-base sm:text-lg font-semibold",
-      colors.dark.text
-    ),
-
-    content: "space-y-3 sm:space-y-4",
-
-    emptyState: clsx(
-      colors.light.textMuted,
-      colors.dark.textMuted,
-      "text-center py-6 sm:py-8 text-sm sm:text-base"
-    ),
+    container: clsx(card.base, card.padding.lg, "mb-8"),
+    header: clsx(base.flexBetween, "items-start mb-6"),
+    title: clsx(base.typography.h3, tokens.text.primary),
+    content: "space-y-6",
   },
 
-  // Forms and inputs - Mobile responsive
+  stats: {
+    grid: "grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8",
+    card: clsx(
+      card.base,
+      card.padding.md,
+      base.flexBetween,
+      "items-center"
+    ),
+    content: "flex-1",
+    label: clsx(base.typography.caption, tokens.text.secondary),
+    value: clsx(base.typography.h3, tokens.text.primary),
+    icon: clsx(base.size.iconLg, "flex-shrink-0"),
+  },
+
+  // Form classes for dashboard (THESE WERE MISSING!)
   form: {
-    group: "space-y-3 sm:space-y-4",
+    group: "space-y-4",
 
     label: clsx(
-      components.text.label,
-      "text-sm"
+      "block",
+      base.typography.label,
+      tokens.text.primary,
+      "mb-1"
     ),
 
     input: clsx(
-      components.input,
-      "text-sm sm:text-base, min-h-[44px]" // Smaller text on mobile
-    ),
-
-    textarea: clsx(
-      components.input,
-      "resize-none text-sm sm:text-base"
-    ),
-
-    select: clsx(
-      components.input,
-      "text-sm sm:text-base"
-    ),
-
-    buttonGroup: clsx(
-      "flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3",
-      "mt-4 sm:mt-6"
+      "w-full",
+      tokens.background.primary,
+      tokens.text.primary,
+      tokens.border.light,
+      "border",
+      tokens.radius.md,
+      "px-3 py-2",
+      base.size.touch,
+      base.transitionColors,
+      "placeholder:text-stone-400 dark:placeholder:text-stone-500",
+      "focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent",
+      "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-stone-50 dark:disabled:bg-stone-800"
     ),
 
     primaryButton: clsx(
-      components.button.secondary,
-      "w-full sm:w-auto text-sm sm:text-base"
-    ),
-
-    secondaryButton: clsx(
-      components.button.small,
-      "bg-gray-500 text-white hover:bg-gray-600",
+      "bg-green-600 hover:bg-green-700 disabled:bg-green-400",
+      "text-white font-medium",
+      "py-2 px-4 sm:py-3 sm:px-6",
+      "rounded-lg",
+      "transition-colors",
+      "disabled:opacity-50 disabled:cursor-not-allowed",
+      "flex items-center justify-center",
+      "min-h-[44px]",
+      "text-sm sm:text-base",
       "w-full sm:w-auto"
     ),
 
-    timePicker: clsx(
-      // "w-full",
-      colors.light.borderInput,
-      colors.light.bgInput,
-      colors.dark.bgInput,
-      colors.dark.text,
-      colors.dark.borderInput,
-      base.rounded.sm,
-      "px-2", // Only horizontal padding
-      "border",
-      "min-h-[44px]", // Move min-height here
-    ),
-  },
-
-  // Tables - Mobile responsive
-  table: {
-    container: "overflow-x-auto -mx-3 sm:mx-0", // Extend to edges on mobile
-
-    table: "w-full border-collapse min-w-max", // Prevent table from being too narrow
-
-    header: clsx(
-      "border-b",
-      colors.dark.border
+    secondaryButton: clsx(
+      "bg-stone-100 dark:bg-stone-700",
+      "text-stone-900 dark:text-white",
+      "hover:bg-stone-200 dark:hover:bg-stone-600",
+      "border border-stone-300 dark:border-stone-600",
+      "font-medium",
+      "py-2 px-4 sm:py-3 sm:px-6",
+      "rounded-lg",
+      "transition-colors",
+      "disabled:opacity-50 disabled:cursor-not-allowed",
+      "flex items-center justify-center",
+      "min-h-[44px]",
+      "text-sm sm:text-base",
+      "w-full sm:w-auto"
     ),
 
-    headerCell: clsx(
-      "text-left p-2 sm:p-3 font-medium text-xs sm:text-sm",
-      colors.light.textMuted,
-      colors.dark.textMuted
+    dangerButton: clsx(
+      "bg-red-600 hover:bg-red-700 disabled:bg-red-400",
+      "text-white font-medium",
+      "py-2 px-4 sm:py-3 sm:px-6",
+      "rounded-lg",
+      "transition-colors",
+      "disabled:opacity-50 disabled:cursor-not-allowed",
+      "flex items-center justify-center",
+      "min-h-[44px]",
+      "text-sm sm:text-base",
+      "w-full sm:w-auto"
     ),
 
-    row: clsx(
-      "border-b",
-      colors.dark.border,
-      "hover:bg-gray-50 dark:hover:bg-gray-700",
-      base.transitionColors
-    ),
-
-    cell: clsx(
-      "p-2 sm:p-3 text-xs sm:text-sm",
-      colors.dark.text
-    ),
-  },
-
-  // Filter buttons - Mobile responsive
-  filters: {
-    container: clsx(
-      "flex flex-wrap gap-2"
-    ),
-
-    button: {
-      base: clsx(
-        "px-3 py-1.5 text-xs sm:text-sm rounded w-20",
-        base.transitionColors
-      ),
-
-      active: clsx(
-        colors.secondary.base
-      ),
-
-      inactive: clsx(
-        "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300",
-        "hover:bg-gray-300 dark:hover:bg-gray-600"
-      ),
-    },
-  },
-
-  // Status badges - Mobile responsive
-  status: {
-    confirmed: clsx(colors.status.success, "text-xs px-2 py-1"),
-    pending: clsx(colors.status.warning, "text-xs px-2 py-1"),
-    cancelled: clsx(colors.status.error, "text-xs px-2 py-1"),
-  },
-
-  // Action buttons - Mobile responsive
-  actions: {
-    container: clsx(
-      "flex flex-wrap gap-2 mt-3"
-    ),
-
-    edit: clsx(
-      "px-3 py-1.5 text-xs rounded",
-      colors.secondary.base,
-      colors.secondary.hover,
-      "w-20"
-    ),
-
-    delete: clsx(
-      "px-3 py-1.5 text-xs rounded",
-      "bg-red-500 text-white hover:bg-red-600",
-      "w-20"
-    ),
-
-    add: clsx(
-      "px-3 py-1.5 text-xs rounded",
-      "bg-green-500 text-white hover:bg-green-600",
-      "flex items-center space-x-1",
-      "w-20"
+    buttonGroup: clsx(
+      "flex flex-col sm:flex-row",
+      "gap-3",
+      "mt-4 sm:mt-6"
     ),
   },
 }
 
-// Export utilities for custom use
-export { base, colors, components }
+// Status Indicators
+export const status = {
+  pending: clsx(badge.base, "bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-300"),
+  confirmed: clsx(badge.base, "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300"),
+  cancelled: clsx(badge.base, "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300"),
+  completed: clsx(badge.base, "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300"),
+}
+
+// Theme Toggle
+export const theme = {
+  toggle: clsx(
+    "p-2",
+    tokens.radius.md,
+    "text-white/80 hover:text-white",
+    "hover:bg-white/10",
+    base.transitionColors,
+  ),
+}
+
+// Utility Exports
+export { tokens, base }
+
+// Legacy compatibility (can be removed later)
+export const components = { badge, card, button }
+export const colors = tokens

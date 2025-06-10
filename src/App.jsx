@@ -1,62 +1,69 @@
+// src/App.jsx - Updated with new structure
 import React, { useState, useEffect, useRef } from "react";
-import {Routes, Route, Link} from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import { fetchTrainers } from "./utils/fetchTrainers";
-import { app } from "./utils/classnames";
-
-import Navbar from "./components/Navbar"
 import { fetchAvailability } from "./utils/fetchAvailability";
-
+import { fetchBookings } from "./utils/fetchBookings";
 import { db } from "./firebase";
-import CoachesDashboard from "./components/CoachDashboard";
-import {fetchBookings} from "./utils/fetchBookings";
-import BookingPage from "./components/BookingPage";
 
+// Layout components
+import { Navbar } from "./components/layout";
+import { Page, Container } from "./components/layout";
 
+// Page components
+import BookingPage from "./components/pages/BookingPage";
+import DashboardPage from "./components/pages/DashboardPage";
 
 export default function App() {
   const [trainers, setTrainers] = useState([]);
   const [selectedCoach, setSelectedCoach] = useState(null);
-  const bookingRef = useRef(null);
   const [availability, setAvailability] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [coachAvailability, setCoachAvailability] = useState([]);
+  const bookingRef = useRef(null);
 
   useEffect(() => {
-    fetchTrainers(db).then(setTrainers);
-    fetchAvailability(db).then(setAvailability);
-    fetchBookings(db).then(setBookings);
+    const loadData = async () => {
+      try {
+        const [trainersData, availabilityData, bookingsData] = await Promise.all([
+          fetchTrainers(db),
+          fetchAvailability(db),
+          fetchBookings(db)
+        ]);
+
+        setTrainers(trainersData);
+        setAvailability(availabilityData);
+        setBookings(bookingsData);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      }
+    };
+
+    loadData();
   }, []);
 
-  console.log("Trainers: ", trainers, "\nAvailability: ", availability, "\nSelected Coach: ", selectedCoach);
-
   const commonProps = {
-    trainers: trainers,
-    availability: availability,
-    bookings: bookings,
-
-    selectedCoach: selectedCoach,
-    setSelectedCoach: setSelectedCoach,
-    coachAvailability: coachAvailability,
-    setCoachAvailability: setCoachAvailability,
-    bookingRef: bookingRef,
+    trainers,
+    availability,
+    bookings,
+    selectedCoach,
+    setSelectedCoach,
+    coachAvailability,
+    setCoachAvailability,
+    bookingRef,
   };
 
   return (
-    <main className={app.main}>
+    <Page>
       <Navbar />
-      <div className={app.container}>
+      <Container>
         <Routes>
-          {/* Main booking page */}
           <Route path="/" element={<BookingPage {...commonProps} />} />
-
-          {/* Dashboard routes */}
-          <Route path="/dashboard" element={<CoachesDashboard {...commonProps} />} />
-          {trainers.length > 0 && (
-            <Route path="/dashboard/:trainerId" element={<CoachesDashboard {...commonProps}  />}/>
-          )}
+          <Route path="/dashboard" element={<DashboardPage {...commonProps} />} />
+          <Route path="/dashboard/:trainerId" element={<DashboardPage {...commonProps} />} />
         </Routes>
-      </div>
-    </main>
+      </Container>
+    </Page>
   );
 }
